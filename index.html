@@ -24,14 +24,14 @@ const T = {
   blue:"#60A5FA", orange:"#FB923C", pink:"#F472B6", cyan:"#22D3EE",
   textPrimary:"#F0EEF8", textSecondary:"#A8A4C0", textMuted:"#6B6882",
 };
-const DC   = { Easy:T.mint, Medium:T.gold, Hard:T.red };
-const SM   = {
-  STR:{ icon:"⚔️",  color:T.red,    label:"Strength" },
-  INT:{ icon:"📚",  color:T.blue,   label:"Intelligence" },
-  CHA:{ icon:"🗣️", color:T.orange, label:"Charisma" },
-  DIS:{ icon:"🎯",  color:T.purple, label:"Discipline" },
-  WLT:{ icon:"💎",  color:T.mint,   label:"Wealth" },
-  VIT:{ icon:"❤️",  color:T.pink,   label:"Vitality" },
+// Stats kept for internal arc/journey mapping — not displayed to user
+const SM = {
+  STR:{ icon:"⚔️", color:T.red,    label:"Strength" },
+  INT:{ icon:"⚔️", color:T.blue,   label:"Intelligence" },
+  CHA:{ icon:"⚔️", color:T.orange, label:"Charisma" },
+  WLT:{ icon:"⚔️", color:T.mint,   label:"Wealth" },
+  VIT:{ icon:"⚔️", color:T.pink,   label:"Vitality" },
+  DIS:{ icon:"⚔️", color:T.purple, label:"Discipline" },
 };
 const SKEYS       = Object.keys(SM);
 const GOAL_XP     = 500, GOAL_COINS     = 200;
@@ -321,100 +321,6 @@ const getBossTaunt = (boss, hpPct) =>
   hpPct > 0.33 ? shuffle(boss.taunts.half)[0] :
                  shuffle(boss.taunts.low)[0];
 
-// ─── BOSS QUESTS ──────────────────────────────────────────────────
-// Static boss quest fallback pool — flat single task per quest, 10 HP damage each
-const BQ = {
-  iron:   [
-    { id:"bq_i1", icon:"💧", baseTitle:"Hydrate",        task:"Drink 8 full glasses of water today",                   dmg:10, xp:50, coins:14, stat:"VIT" },
-    { id:"bq_i2", icon:"😴", baseTitle:"Sleep early",    task:"In bed by 10:30pm, phone out of the bedroom",           dmg:10, xp:50, coins:14, stat:"VIT" },
-    { id:"bq_i3", icon:"📵", baseTitle:"Screen break",   task:"No social media for 3 hours straight",                  dmg:10, xp:50, coins:14, stat:"DIS" },
-    { id:"bq_i4", icon:"🧘", baseTitle:"Clear your head",task:"10 minutes of meditation or deliberate breathing",       dmg:10, xp:50, coins:14, stat:"DIS" },
-    { id:"bq_i5", icon:"🎯", baseTitle:"Focus block",    task:"One uninterrupted 45-minute work session",               dmg:10, xp:50, coins:14, stat:"DIS" },
-    { id:"bq_i6", icon:"💪", baseTitle:"Move",           task:"30 minutes of intentional movement",                    dmg:10, xp:50, coins:14, stat:"STR" },
-    { id:"bq_i7", icon:"🥗", baseTitle:"Eat well",       task:"Cook and eat two nutritious meals today",               dmg:10, xp:50, coins:14, stat:"VIT" },
-  ],
-  sage:   [
-    { id:"bq_s1", icon:"💧", baseTitle:"Hydrate",        task:"Drink 8 full glasses of water today",                   dmg:10, xp:50, coins:14, stat:"VIT" },
-    { id:"bq_s2", icon:"😴", baseTitle:"Protect sleep",  task:"In bed by 10:30pm, no screens 30 minutes before",       dmg:10, xp:50, coins:14, stat:"VIT" },
-    { id:"bq_s3", icon:"📵", baseTitle:"Phone-free work",task:"Phone face-down and silent for 2 hours",                dmg:10, xp:50, coins:14, stat:"DIS" },
-    { id:"bq_s4", icon:"📖", baseTitle:"Deep read",      task:"Read for 30 focused minutes without skimming",          dmg:10, xp:50, coins:14, stat:"INT" },
-    { id:"bq_s5", icon:"🎯", baseTitle:"Deep work",      task:"One 60-minute focus block on your most important task",  dmg:10, xp:50, coins:14, stat:"DIS" },
-    { id:"bq_s6", icon:"✍️", baseTitle:"Write",          task:"Write 200 words — anything, just make it real",          dmg:10, xp:50, coins:14, stat:"INT" },
-    { id:"bq_s7", icon:"🧘", baseTitle:"Clear your mind",task:"10 minutes of meditation before starting work",          dmg:10, xp:50, coins:14, stat:"DIS" },
-  ],
-  social: [
-    { id:"bq_c1", icon:"💧", baseTitle:"Hydrate",        task:"Drink 8 glasses of water today",                        dmg:10, xp:50, coins:14, stat:"VIT" },
-    { id:"bq_c2", icon:"😴", baseTitle:"Sleep well",     task:"In bed by 10:30pm — rest makes you better company",     dmg:10, xp:50, coins:14, stat:"VIT" },
-    { id:"bq_c3", icon:"📵", baseTitle:"Be present",     task:"No social media for 3 hours — be with real people",     dmg:10, xp:50, coins:14, stat:"DIS" },
-    { id:"bq_c4", icon:"📞", baseTitle:"Real connection",task:"Call or video-chat someone you actually care about",     dmg:10, xp:50, coins:14, stat:"CHA" },
-    { id:"bq_c5", icon:"🎯", baseTitle:"Focus block",    task:"One 45-minute focused work session without interruption",dmg:10, xp:50, coins:14, stat:"DIS" },
-    { id:"bq_c6", icon:"🧘", baseTitle:"Centre yourself",task:"10 minutes of quiet — meditation, breathing, or walking alone", dmg:10, xp:50, coins:14, stat:"DIS" },
-    { id:"bq_c7", icon:"🥗", baseTitle:"Eat well",       task:"Cook a proper meal — no delivery, no shortcuts",        dmg:10, xp:50, coins:14, stat:"VIT" },
-  ],
-  golden: [
-    { id:"bq_g1", icon:"💧", baseTitle:"Hydrate",        task:"Drink 8 glasses of water today",                        dmg:10, xp:50, coins:14, stat:"VIT" },
-    { id:"bq_g2", icon:"😴", baseTitle:"Sleep to think", task:"In bed by 10:30pm — financial clarity starts with rest", dmg:10, xp:50, coins:14, stat:"VIT" },
-    { id:"bq_g3", icon:"📵", baseTitle:"No impulse zone",task:"Delete all shopping apps from your phone for today",     dmg:10, xp:50, coins:14, stat:"DIS" },
-    { id:"bq_g4", icon:"📊", baseTitle:"Track everything",task:"Log every penny you spent today — nothing skipped",     dmg:10, xp:50, coins:14, stat:"WLT" },
-    { id:"bq_g5", icon:"🚫", baseTitle:"No-spend day",   task:"No non-essential purchases today",                      dmg:10, xp:50, coins:14, stat:"WLT" },
-    { id:"bq_g6", icon:"🎯", baseTitle:"Focus block",    task:"One 45-minute focused session on your most important task", dmg:10, xp:50, coins:14, stat:"DIS" },
-    { id:"bq_g7", icon:"🧘", baseTitle:"Calm the noise", task:"10 minutes of meditation — money stress lives in the body", dmg:10, xp:50, coins:14, stat:"DIS" },
-  ],
-  fortress: [
-    { id:"bq_f1", icon:"💧", baseTitle:"Hydrate",        task:"Drink 8 glasses of water today",                        dmg:10, xp:50, coins:14, stat:"VIT" },
-    { id:"bq_f2", icon:"😴", baseTitle:"Sleep protocol", task:"In bed by 10:30pm, wind down properly",                 dmg:10, xp:50, coins:14, stat:"VIT" },
-    { id:"bq_f3", icon:"📵", baseTitle:"Screen curfew",  task:"No screens 1 hour before bed tonight",                  dmg:10, xp:50, coins:14, stat:"DIS" },
-    { id:"bq_f4", icon:"🧘", baseTitle:"Breathe",        task:"10 minutes of breathwork or meditation",                dmg:10, xp:50, coins:14, stat:"VIT" },
-    { id:"bq_f5", icon:"🚿", baseTitle:"Cold finish",    task:"End your shower with 30 seconds of cold water",          dmg:10, xp:50, coins:14, stat:"VIT" },
-    { id:"bq_f6", icon:"🎯", baseTitle:"Close one loop", task:"Pick one thing you have been avoiding and do it now",   dmg:10, xp:50, coins:14, stat:"DIS" },
-    { id:"bq_f7", icon:"🥗", baseTitle:"Nourish",        task:"Cook two clean meals — no delivery, no shortcuts",      dmg:10, xp:50, coins:14, stat:"VIT" },
-  ],
-  legend: [
-    { id:"bq_l1", icon:"💧", baseTitle:"Hydrate",        task:"Drink 8 glasses of water today",                        dmg:10, xp:50, coins:14, stat:"DIS" },
-    { id:"bq_l2", icon:"😴", baseTitle:"Sleep discipline",task:"Same bedtime as yesterday — consistency is the habit",  dmg:10, xp:50, coins:14, stat:"DIS" },
-    { id:"bq_l3", icon:"📵", baseTitle:"Phone discipline",task:"No phone for the first hour of your day",               dmg:10, xp:50, coins:14, stat:"DIS" },
-    { id:"bq_l4", icon:"🧘", baseTitle:"Meditate",       task:"10 minutes of meditation — no excuses today",           dmg:10, xp:50, coins:14, stat:"DIS" },
-    { id:"bq_l5", icon:"📓", baseTitle:"Journal",        task:"Write honestly in your journal for at least 5 minutes", dmg:10, xp:50, coins:14, stat:"DIS" },
-    { id:"bq_l6", icon:"🎯", baseTitle:"Hard thing first",task:"Do the thing you most want to avoid — before anything else", dmg:10, xp:50, coins:14, stat:"DIS" },
-    { id:"bq_l7", icon:"📋", baseTitle:"Plan tomorrow",  task:"Write tomorrow's top 3 priorities before you sleep",    dmg:10, xp:50, coins:14, stat:"DIS" },
-  ],
-};
-
-function getBossQuests(arcId, activeJourneyCount=1) {
-  const pool  = BQ[arcId]||BQ.legend;
-  const count = activeJourneyCount >= 3 ? 7 : activeJourneyCount >= 2 ? 5 : 3;
-  return shuffle([...pool]).slice(0, count).map(q => ({ ...q, sd:0 }));
-}
-
-function getInitBossQuests(arcId) { return getBossQuests(arcId, 0); }
-
-
-const DQ = [
-  { id:"workout", icon:"🏋️‍♂️",stat:"STR",baseTitle:"Work Out",           timeTag:"any",    repeatable:true,  difficulties:[{label:"Easy",title:"Work out 15 mins",          xp:40,  coins:10,est:"15min" },{label:"Medium",title:"Work out 30 mins",          xp:80,  coins:20,est:"30min" },{label:"Hard",title:"Work out 60 mins",          xp:150,coins:40,est:"60min"}]},
-  { id:"run",     icon:"🏃",    stat:"STR",baseTitle:"Go for a Run",        timeTag:"morning",repeatable:true,  difficulties:[{label:"Easy",title:"Walk or jog 1km",           xp:35,  coins:9, est:"15min" },{label:"Medium",title:"Run 3km steady",            xp:70,  coins:18,est:"25min" },{label:"Hard",title:"Run 5km",                   xp:140,coins:35,est:"40min"}]},
-  { id:"pushups", icon:"💪",    stat:"STR",baseTitle:"Push-ups",            timeTag:"any",    repeatable:true,  difficulties:[{label:"Easy",title:"Do 10 push-ups",            xp:25,  coins:7, est:"3min"  },{label:"Medium",title:"Do 30 push-ups",            xp:55,  coins:14,est:"8min"  },{label:"Hard",title:"Do 60 push-ups",            xp:110,coins:28,est:"15min"}]},
-  { id:"stretch", icon:"🤸",    stat:"STR",baseTitle:"Stretch",             timeTag:"morning",repeatable:true,  difficulties:[{label:"Easy",title:"Stretch 5 mins",            xp:20,  coins:5, est:"5min"  },{label:"Medium",title:"Stretch 15 mins",           xp:45,  coins:11,est:"15min" },{label:"Hard",title:"Full 30-min mobility",      xp:90, coins:22,est:"30min"}]},
-  { id:"read",    icon:"📖",    stat:"INT",baseTitle:"Read",                timeTag:"evening",repeatable:true,  difficulties:[{label:"Easy",title:"Read 10 minutes",           xp:30,  coins:8, est:"10min" },{label:"Medium",title:"Read 25 minutes",           xp:60,  coins:15,est:"25min" },{label:"Hard",title:"Read 60 minutes",           xp:120,coins:30,est:"60min"}]},
-  { id:"learn",   icon:"💻",    stat:"INT",baseTitle:"Learn Something",     timeTag:"any",    repeatable:true,  difficulties:[{label:"Easy",title:"Watch a 10-min tutorial",   xp:35,  coins:9, est:"10min" },{label:"Medium",title:"Complete a 30-min lesson",   xp:75,  coins:20,est:"30min" },{label:"Hard",title:"Study 90 minutes",          xp:140,coins:35,est:"90min"}]},
-  { id:"podcast", icon:"🎧",    stat:"INT",baseTitle:"Educational Audio",   timeTag:"any",    repeatable:true,  difficulties:[{label:"Easy",title:"Listen 15 mins",            xp:25,  coins:6, est:"15min" },{label:"Medium",title:"Listen 30 mins with notes",  xp:55,  coins:14,est:"30min" },{label:"Hard",title:"Full episode and summarise", xp:100,coins:25,est:"60min"}]},
-  { id:"write",   icon:"✍️",    stat:"INT",baseTitle:"Write",               timeTag:"any",    repeatable:true,  difficulties:[{label:"Easy",title:"Write 3 bullet points",     xp:30,  coins:8, est:"5min"  },{label:"Medium",title:"Write a 150-word reflection", xp:65,  coins:16,est:"15min" },{label:"Hard",title:"Write a 500-word analysis", xp:130,coins:33,est:"45min"}]},
-  { id:"call",    icon:"📞",    stat:"CHA",baseTitle:"Connect with Someone",timeTag:"any",    repeatable:true,  difficulties:[{label:"Easy",title:"Message a friend",          xp:25,  coins:6, est:"5min"  },{label:"Medium",title:"Have a 15-min call",          xp:70,  coins:18,est:"20min" },{label:"Hard",title:"Meet someone in person",    xp:130,coins:33,est:"60min"}]},
-  { id:"network", icon:"🤝",    stat:"CHA",baseTitle:"Network",             timeTag:"any",    repeatable:true,  difficulties:[{label:"Easy",title:"Comment on 3 posts",        xp:20,  coins:5, est:"5min"  },{label:"Medium",title:"Send 3 connection messages",  xp:65,  coins:16,est:"15min" },{label:"Hard",title:"Attend a networking event",  xp:140,coins:35,est:"120min"}]},
-  { id:"praise",  icon:"🌟",    stat:"CHA",baseTitle:"Give Praise",         timeTag:"any",    repeatable:true,  difficulties:[{label:"Easy",title:"Give 1 genuine compliment", xp:20,  coins:5, est:"1min"  },{label:"Medium",title:"Write notes to 2 people",    xp:45,  coins:11,est:"15min" },{label:"Hard",title:"Write a detailed recommendation",xp:90,coins:22,est:"30min"}]},
-  { id:"present", icon:"🎤",    stat:"CHA",baseTitle:"Speak Up",            timeTag:"any",    repeatable:true,  difficulties:[{label:"Easy",title:"Record yourself 2 mins",    xp:30,  coins:8, est:"5min"  },{label:"Medium",title:"Present idea to someone",     xp:70,  coins:18,est:"20min" },{label:"Hard",title:"Deliver a talk to a group",  xp:140,coins:35,est:"60min"}]},
-  { id:"meditate",icon:"🧘",    stat:"DIS",baseTitle:"Meditate",            timeTag:"morning",repeatable:true,  difficulties:[{label:"Easy",title:"Meditate 5 mins",           xp:30,  coins:8, est:"5min"  },{label:"Medium",title:"Meditate 15 mins",          xp:60,  coins:15,est:"15min" },{label:"Hard",title:"Meditate 30 mins",          xp:110,coins:28,est:"30min"}]},
-  { id:"journal", icon:"📓",    stat:"DIS",baseTitle:"Journal",             timeTag:"evening",repeatable:true,  difficulties:[{label:"Easy",title:"Write 3 gratitude points",  xp:25,  coins:6, est:"5min"  },{label:"Medium",title:"Write a full journal entry",   xp:55,  coins:14,est:"15min" },{label:"Hard",title:"Deep reflection on goals",   xp:95, coins:24,est:"30min"}]},
-  { id:"nophone", icon:"📵",    stat:"DIS",baseTitle:"Digital Detox",       timeTag:"any",    repeatable:true,  difficulties:[{label:"Easy",title:"No phone for 30 mins",      xp:30,  coins:8, est:"30min" },{label:"Medium",title:"No phone for 2 hours",       xp:65,  coins:16,est:"120min"},{label:"Hard",title:"No phone for 4 hours",       xp:120,coins:30,est:"240min"}]},
-  { id:"plan",    icon:"📅",    stat:"DIS",baseTitle:"Plan Your Day",       timeTag:"morning",repeatable:true,  difficulties:[{label:"Easy",title:"List 3 priorities",         xp:20,  coins:5, est:"5min"  },{label:"Medium",title:"Plan tomorrow hour by hour", xp:50,  coins:12,est:"15min" },{label:"Hard",title:"Full weekly review and plan",xp:100,coins:25,est:"30min"}]},
-  { id:"track",   icon:"💰",    stat:"WLT",baseTitle:"Track Spending",      timeTag:"evening",repeatable:true,  difficulties:[{label:"Easy",title:"Log today's expenses",       xp:25,  coins:6, est:"5min"  },{label:"Medium",title:"Categorise 3 days spending",  xp:55,  coins:14,est:"15min" },{label:"Hard",title:"Full week spending analysis",xp:100,coins:25,est:"30min"}]},
-  { id:"save",    icon:"🏦",    stat:"WLT",baseTitle:"Save Money",          timeTag:"any",    repeatable:false, difficulties:[{label:"Easy",title:"Move £5 to savings",         xp:25,  coins:6, est:"2min"  },{label:"Medium",title:"Move £25 to savings",          xp:55,  coins:14,est:"5min"  },{label:"Hard",title:"Move £100 to savings",       xp:110,coins:28,est:"10min"}]},
-  { id:"nospend", icon:"🚫",    stat:"WLT",baseTitle:"No-Spend Challenge",  timeTag:"any",    repeatable:true,  difficulties:[{label:"Easy",title:"Skip one impulse purchase", xp:30,  coins:8, est:"All day"},{label:"Medium",title:"No non-essential spending", xp:65,  coins:16,est:"All day"},{label:"Hard",title:"Strict no-spend day",       xp:120,coins:30,est:"All day"}]},
-  { id:"income",  icon:"📊",    stat:"WLT",baseTitle:"Income Action",       timeTag:"any",    repeatable:true,  difficulties:[{label:"Easy",title:"Brainstorm one income idea",xp:30,  coins:8, est:"10min" },{label:"Medium",title:"Research an income opportunity",xp:65,coins:16,est:"30min" },{label:"Hard",title:"Take a step toward extra income",xp:130,coins:33,est:"60min"}]},
-  { id:"cold",    icon:"🚿",    stat:"VIT",baseTitle:"Cold Shower",         timeTag:"morning",repeatable:true,  difficulties:[{label:"Easy",title:"End shower with 30s cold",  xp:25,  coins:6, est:"1min"  },{label:"Medium",title:"Full cold shower 2 minutes",  xp:55,  coins:14,est:"2min"  },{label:"Hard",title:"Full cold shower 5 minutes",  xp:100,coins:25,est:"5min" }]},
-  { id:"water",   icon:"💧",    stat:"VIT",baseTitle:"Drink Water",         timeTag:"any",    repeatable:true,  difficulties:[{label:"Easy",title:"Drink 4 glasses today",     xp:20,  coins:5, est:"All day"},{label:"Medium",title:"Drink 6 glasses today",     xp:40,  coins:10,est:"All day"},{label:"Hard",title:"Drink 8 glasses today",     xp:75, coins:19,est:"All day"}]},
-  { id:"sleep",   icon:"😴",    stat:"VIT",baseTitle:"Sleep Well",          timeTag:"evening",repeatable:false, difficulties:[{label:"Easy",title:"Be in bed by 11pm",         xp:30,  coins:8, est:"Night" },{label:"Medium",title:"Get 7 hours of sleep",         xp:60,  coins:15,est:"7hrs"  },{label:"Hard",title:"8 hours no screens before bed",xp:100,coins:25,est:"9hrs" }]},
-  { id:"meal",    icon:"🥗",    stat:"VIT",baseTitle:"Eat Well",            timeTag:"any",    repeatable:true,  difficulties:[{label:"Easy",title:"Eat one healthy meal",       xp:30,  coins:8, est:"30min" },{label:"Medium",title:"Cook 2 healthy meals",         xp:65,  coins:16,est:"60min" },{label:"Hard",title:"Eat clean all day",           xp:120,coins:30,est:"All day"}]},
-];
 const calcLoginBonus = streak =>
   streak >= 30 ? { xp:200, coins:100, msg:"30+ day streak — Elite bonus! 🏆" } :
   streak >= 14 ? { xp:100, coins:50,  msg:"2-week streak bonus! ⚡" } :
@@ -473,8 +379,8 @@ const SKILL_ROLL = () => {
 const getArc  = id => ARCS.find(a => a.id === id) || ARCS[0];
 const getBoss = (arcId, idx) => { const r = BOSSES[arcId]||BOSSES.iron; return r[idx % r.length]; };
 
-const AW = { iron:["Iron","Steel","Forge"], sage:["Sage","Scroll","Codex"], social:["Spark","Nexus","Pulse"], golden:["Gold","Vault","Mint"], fortress:["Bastion","Citadel","Haven"], legend:["Legend","Ghost","Apex"] };
-const genUN  = (name, arcId) => name.replace(/[^a-zA-Z0-9]/g,"")+"_"+(AW[arcId]||AW.iron)[Math.floor(Math.random()*3)]+Math.floor(Math.random()*900+100);
+const UN_WORDS = ["SHADOW","FORGE","STORM","BLADE","IRON","GHOST","APEX","VOID","EMBER","FLUX","NOVA","EDGE"];
+const genUN = (name) => (name||"HERO").replace(/[^a-zA-Z0-9]/g,"").slice(0,6).toUpperCase()+"_"+UN_WORDS[Math.floor(Math.random()*UN_WORDS.length)]+Math.floor(Math.random()*900+100);
 const SK     = u => "liferpg_"+u.toLowerCase().replace(/\s/g,"_");
 const persist    = async s  => { try { await window.storage.set(SK(s.un), JSON.stringify(s)); } catch(_){} };
 const loadUN     = async u  => { try { const r=await window.storage.get(SK(u)); return r?JSON.parse(r.value):null; } catch(_){ return null; }};
@@ -484,9 +390,17 @@ const setLastUN  = async u  => { try { await window.storage.set("liferpg_last", 
 const clearLastUN= async () => { try { await window.storage.delete("liferpg_last"); } catch(_){} };
 
 // ─── INITIAL STATE ────────────────────────────────────────────────
+function deriveArcFromGoals(goals) {
+  // Count which stat appears most in the goals — pick the matching arc
+  const tally = {};
+  (goals||[]).forEach(g => { const s = statOf(g)||"STR"; tally[s] = (tally[s]||0)+1; });
+  const topStat = Object.entries(tally).sort((a,b)=>b[1]-a[1])[0]?.[0] || "STR";
+  const arc = ARCS.find(a => a.stat === topStat) || ARCS[0];
+  return arc.id;
+}
+
 function initState(char, un) {
-  // Arc defaults to iron — will be updated when first goal is set
-  const arcId = char.arcId || "iron";
+  const arcId = char.arcId || deriveArcFromGoals(char.goals) || "iron";
   const arc   = getArc(arcId);
   const stats = { STR:30, INT:30, CHA:30, DIS:30, WLT:30, VIT:30 };
   const goals = { STR:[], INT:[], CHA:[], DIS:[], WLT:[], VIT:[] };
@@ -496,7 +410,7 @@ function initState(char, un) {
     qDone:0, totalXP:0, arc:arcId,
     bossIdx:0, bossHp:getBoss(arcId,0).maxHp, bossWins:0,
     daily:[], chosen:true, dDone:{}, history:[], tallies:{}, notes:{},
-    bossQs:getBossQuests(arcId), bqDone:{}, weekly:[], wDone:{},
+    weekly:[], wDone:{},
     lastReset:today(), lastWeekReset:monday(),
     equipped:{ helmet:null, body:null, weapon:null, offhand:null, relic:null, trinket:null },
     bag:[], clan:null, skillProg:{ STR:0,INT:0,CHA:0,DIS:0,WLT:0,VIT:0 },
@@ -519,7 +433,7 @@ function initState(char, un) {
   };
 }
 const DEFAULTS = {
-  dDone:{}, bqDone:{}, wDone:{}, daily:[], weekly:[], bossQs:[],
+  dDone:{}, wDone:{}, daily:[], weekly:[],
   history:[], tallies:{}, notes:{}, bag:[], skillUsed:[],
   skillProg:{ STR:0,INT:0,CHA:0,DIS:0,WLT:0,VIT:0 },
   goals:{ STR:[],INT:[],CHA:[],DIS:[],WLT:[],VIT:[] },
@@ -532,7 +446,7 @@ const DEFAULTS = {
   achievements:[], goalsCompleted:0, milestoneDoneCount:0,
   perfectWeeks:0, loreRead:0, shieldsUsed:0, chainsUnlocked:0,
   customQuestCount:0, chainProgress:{}, loginBonusClaimed:null,
-  bossLore:[], bqTotalDone:0, bossUnlocksAt:null,
+  bossLore:[], bossUnlocksAt:null,
   arcChallengeProgress:{}, arcChallengeDone:[],
   firstPlayDate:null, startStats:null, bossStartDate:null, chronicleShown:false,
   journeys:[], quizAnswers:[], askedQuestions:[], seenScreens:[], profileSummary:null, skillJourneys:[],
@@ -577,27 +491,38 @@ const normalise = s => {
 // ─── API ──────────────────────────────────────────────────────────
 // Shared response parser
 function parseApiResponse(raw) {
-  if (!raw?.trim()) throw new Error("Empty response. Try again.");
+  if (!raw?.trim()) throw new Error("Empty API response. Try again.");
   let d = null;
   try { d = JSON.parse(raw.trim().replace(/^\uFEFF/,"")); }
   catch(_) {
     const m = raw.match(/\{[\s\S]*\}/);
     if (m) { try { d = JSON.parse(m[0]); } catch(_){} }
-    if (!d) throw new Error("Could not parse response. Try again.");
+    if (!d) throw new Error("Could not parse API response. Try again.");
   }
-  if (d?.error) throw new Error(d.error.message||"API error. Try again.");
+  if (d?.error) {
+    const msg = d.error.message || d.error.type || JSON.stringify(d.error);
+    // Log raw for debugging
+    console.error("API error response:", JSON.stringify(d.error));
+    throw new Error("API: " + msg);
+  }
+  // Handle streaming/overloaded responses that come back as plain text
+  if (d?.type === "error") throw new Error("API: " + (d.error?.message || d.message || "unknown error"));
   const text = d?.content?.find?.(b=>b?.type==="text")?.text;
-  if (!text) throw new Error("No text in response. Try again.");
+  if (!text) {
+    console.error("Unexpected API response shape:", JSON.stringify(d).slice(0,200));
+    throw new Error("No text in API response. Try again.");
+  }
   return text.trim();
 }
-
-// ─── API KEY ──────────────────────────────────────────────────────
-
 
 // Sonnet: high-quality generation (journeys, profile summary, boss quests)
 async function ai(prompt, maxTokens=1000) {
   const r = await fetch("https://api.anthropic.com/v1/messages", {
-    method:"POST", headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+    method:"POST", headers:{
+      "Content-Type":"application/json",
+      "anthropic-version":"2023-06-01",
+      "anthropic-dangerous-direct-browser-access":"true",
+    },
     body:JSON.stringify({ model:"claude-sonnet-4-6", max_tokens:maxTokens, messages:[{role:"user",content:prompt}] }),
   });
   return parseApiResponse(await r.text());
@@ -606,7 +531,11 @@ async function ai(prompt, maxTokens=1000) {
 // Haiku: fast tasks (skill quiz, daily review, coach reply, small JSON)
 async function haiku(prompt, maxTokens=600) {
   const r = await fetch("https://api.anthropic.com/v1/messages", {
-    method:"POST", headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+    method:"POST", headers:{
+      "Content-Type":"application/json",
+      "anthropic-version":"2023-06-01",
+      "anthropic-dangerous-direct-browser-access":"true",
+    },
     body:JSON.stringify({ model:"claude-haiku-4-5-20251001", max_tokens:maxTokens, messages:[{role:"user",content:prompt}] }),
   });
   return parseApiResponse(await r.text());
@@ -636,35 +565,7 @@ function parseJSON(raw) {
   throw new Error("Could not parse AI response as JSON. Try again.");
 }
 
-async function genProfile(arcName, summary) {
-  return parseJSON(await ai(
-    `You are LifeRPG. Based on these quiz answers, write a user profile.\nArc: ${arcName}\nAnswers:\n${summary}\n\n`+
-    `Return ONLY valid JSON with no text before or after:\n`+
-    `{"summary":"2-3 sentences using you","goals":["g1","g2","g3"],"insights":["i1","i2","i3"],"tips":["t1","t2","t3"],"research":["r1","r2","r3"],"suggestedGoals":["sg1","sg2","sg3","sg4"]}`, 1200));
-}
 
-async function genQuests(arcStat, profileSummary, goalsStr) {
-  const others = ["STR","INT","CHA","DIS","WLT","VIT"].filter(s => s!==arcStat);
-  const groups = [[arcStat,...others.slice(0,2)], others.slice(2)];
-  const examples = { STR:"Work out 30 mins | Run 3km | Do 20 push-ups | Stretch 10 mins", INT:"Read for 20 mins | Watch a tutorial | Write 200 words | Listen to a podcast", CHA:"Call a friend | Send 3 messages | Attend an event | Give a compliment", DIS:"Meditate 10 mins | Journal today | No phone for 1 hour | Plan tomorrow", WLT:"Save £20 | Log expenses | Skip a purchase | Research one investment", VIT:"Drink 6 glasses of water | Sleep by 10:30pm | Eat a healthy meal | Cold shower" };
-  async function fetchGroup(stats) {
-    const prompt = `Daily quests for LifeRPG. Stats (2 quests each): ${stats.join(", ")}\n${stats.map(s=>`${s}: ${examples[s]||s}`).join("\n")}\n\nReturn JSON array only:\n[{id,stat,icon,title,e,ex,ec,ee,m,mx,mc,me,h,hx,hc,he}]`;
-    const raw = await ai(prompt, 1000);
-    const parsed = parseJSON(raw);
-    if (!Array.isArray(parsed)) throw new Error("Expected array");
-    return parsed;
-  }
-  const [g1, g2] = await Promise.all(groups.map(fetchGroup));
-  return [...g1,...g2].map((q,i) => ({
-    id:"dd_"+(q.id||i), stat:q.stat||arcStat, icon:q.icon||"⚡",
-    baseTitle:q.title||"Complete a quest", repeatable:true, timeTag:"any",
-    difficulties:[
-      { label:"Easy",   title:String(q.e||"Easy task"),   xp:Number(q.ex)||25,  coins:Number(q.ec)||7,  est:String(q.ee||"10min") },
-      { label:"Medium", title:String(q.m||"Medium task"), xp:Number(q.mx)||60,  coins:Number(q.mc)||15, est:String(q.me||"20min") },
-      { label:"Hard",   title:String(q.h||"Hard task"),   xp:Number(q.hx)||110, coins:Number(q.hc)||28, est:String(q.he||"45min") },
-    ],
-  }));
-}
 
 async function genMilestones(goalText, arcName) {
   const arr = parseJSON(await haiku(
@@ -674,20 +575,7 @@ async function genMilestones(goalText, arcName) {
   return arr.slice(0,4).map(t => ({ text:String(t), done:false }));
 }
 
-async function genGoalCoach(goalText, arcName, milestones) {
-  const msText = milestones.map(m=>m.text).join("; ") || "none yet";
-  const raw = await ai(
-    `You are a life coach inside the LifeRPG app. The user's goal is: "${goalText}". Their arc is ${arcName}. Their current milestones are: ${msText}.\n\n`+
-    `Reply with ONLY a JSON object. No explanation, no markdown, no backticks. Example structure:\n`+
-    `{"approach":"Your opening strategy sentence. Your second sentence.","quickWin":"One concrete thing to do today.","obstacles":["First obstacle","Second obstacle"],"mindset":"One mindset reframe sentence."}`, 1000);
-  return parseJSON(raw);
-}
 
-async function genCustomQuestDifficulty(title, stat) {
-  return parseJSON(await ai(
-    `You are LifeRPG. Custom quest: "${title}" (stat: ${stat}). Generate XP, coins, and descriptions.\n`+
-    `Return ONLY valid JSON:\n{"easy":{"title":"simpler/shorter version","xp":25,"coins":7,"est":"10min"},"medium":{"title":"${title}","xp":60,"coins":15,"est":"20min"},"hard":{"title":"harder/extended version","xp":110,"coins":28,"est":"45min"}}`, 500));
-}
 
 async function genDailyReview(name, arcName, streak, momentum, questList) {
   return parseJSON(await haiku(
@@ -701,82 +589,6 @@ async function genWeeklyReview(name, arcName, streak, momentum, questList, topSt
     `Return ONLY JSON:\n{"summary":"2-3 honest sentences using you","highlights":["h1","h2"],"focusNext":"one sentence on what to prioritise next week"}`, 900));
 }
 
-async function genBossQuestsAI(arcName, arcStat, goals, bossName, bossLore, bossLevel, count, journeys=[], quizAnswers=[]) {
-  const goalStr    = (goals||[]).slice(0,3).join(" | ") || "self-improvement";
-  const goalCount  = Math.ceil(count * 0.65);
-  const lifeCount  = count - goalCount;
-
-  const journeyContext = (journeys||[])
-    .filter(j => !j.complete && j.currentStep < (j.steps||[]).length)
-    .slice(0, 3)
-    .map(j => {
-      const pct        = Math.round((j.currentStep / j.steps.length) * 100);
-      const doneTitles = j.steps.filter(s=>s.done).map(s=>s.title);
-      const nextTitle  = j.steps[j.currentStep]?.title||"";
-      return `Goal: "${j.goalText}" — ${pct}% through (step ${j.currentStep+1}/${j.steps.length})\n`+
-             (doneTitles.length?`  Already done: ${doneTitles.slice(-3).join("; ")}\n`:"")+
-             (nextTitle?`  Next step: "${nextTitle}"\n`:"");
-    }).join("\n");
-
-  const quizContext = (quizAnswers||[]).slice(0,8).join("; ");
-
-  const LIFESTYLE = [
-    { icon:"💧", baseTitle:"Hydrate",         task:"Drink 8 glasses of water today",                   dmg:10, xp:50, coins:14 },
-    { icon:"😴", baseTitle:"Sleep on time",   task:"In bed by 10:30pm, phone out of the bedroom",      dmg:10, xp:50, coins:14 },
-    { icon:"🥗", baseTitle:"Eat clean",       task:"No junk food or takeaway today",                   dmg:10, xp:50, coins:14 },
-    { icon:"📵", baseTitle:"Phone-free hour", task:"No social media for 1 hour straight",              dmg:10, xp:50, coins:14 },
-    { icon:"🧘", baseTitle:"10-min reset",    task:"10 minutes of meditation or deep breathing",       dmg:10, xp:50, coins:14 },
-    { icon:"🚶", baseTitle:"Walk it out",     task:"Walk for 20 minutes without your phone",           dmg:10, xp:50, coins:14 },
-    { icon:"📓", baseTitle:"Journal entry",   task:"Write 5 minutes — what is actually on your mind", dmg:10, xp:50, coins:14 },
-    { icon:"🚫", baseTitle:"No-spend day",    task:"No non-essential purchases today",                 dmg:10, xp:50, coins:14 },
-  ];
-  const lifePick = shuffle([...LIFESTYLE]).slice(0, lifeCount).map((q,i) => ({
-    id:`bq_ls_${Date.now()}_${i}`, icon:q.icon, baseTitle:q.baseTitle,
-    task:q.task, dmg:q.dmg, xp:q.xp, coins:q.coins, stat:"VIT", sd:0,
-  }));
-
-  const arr = parseJSON(await ai(
-    `You are a quest designer for LifeRPG.\n`+
-    `Boss: "${bossName}" (${arcName} arc) — "${bossLore}"\n`+
-    `Boss level: ${bossLevel} of 5 (1=beginner quests, 5=near-goal performance quests)\n\n`+
-    `PLAYER JOURNEY PROGRESS:\n${journeyContext||"No active journeys yet."}\n`+
-    (quizContext?`PLAYER STARTING LEVEL:\n${quizContext}\n`:"") +
-    `\nWrite ${goalCount} side quests that:\n`+
-    `1. Directly attack THIS boss's specific psychological weakness\n`+
-    `2. Are calibrated to boss level ${bossLevel}/5 — level 1 is easy, level 5 is close to the player's final goal\n`+
-    `3. Are based on what the player has ALREADY DONE (not what the goal eventually requires)\n\n`+
-    `FORMAT RULES:\n`+
-    `- baseTitle: 1-3 words, starts with a verb\n`+
-    `- task: one clean sentence, starts with a verb, no justifications or proof conditions\n`+
-    `- icon: relevant emoji\n`+
-    `- xp: 50, coins: 14, dmg: 10\n\n`+
-    `BAD: "Read three pages with your phone in another room and screen time app open"\n`+
-    `GOOD: "Read three pages of any book you own"\n\n`+
-    `Return ONLY a JSON array:\n`+
-    `[{"id":"bq_g1","icon":"🏃","baseTitle":"Run 3 min","task":"Run for 3 minutes without stopping","xp":50,"coins":14,"dmg":10,"stat":"STR"}]`,
-    1400
-  ));
-
-  if (!Array.isArray(arr)) throw new Error("Parse failed");
-  const goalQuests = arr.slice(0, goalCount).map((q,i) => ({
-    id:`bq_g_${Date.now()}_${i}`,
-    icon:q.icon||"⚔️",
-    baseTitle:String(q.baseTitle||"Quest").slice(0,20),
-    task:String(q.task||"Complete the task"),
-    dmg:10, xp:50, coins:14,
-    stat:q.stat||arcStat,
-    sd:0,
-  }));
-
-  const result = [];
-  let gi=0, li=0;
-  while (gi < goalQuests.length || li < lifePick.length) {
-    if (gi < goalQuests.length) result.push(goalQuests[gi++]);
-    if (gi < goalQuests.length) result.push(goalQuests[gi++]);
-    if (li < lifePick.length)   result.push(lifePick[li++]);
-  }
-  return result.slice(0, count);
-}
 
 async function genBossVictoryLine(bossName, arcName, goals, bossNum) {
   return haiku(
@@ -792,45 +604,73 @@ async function genChronicleInsight(name, arcName, startStats, currentStats, qDon
 // Pure insight computation — no AI
 async function genGoalQuiz(goalText, arcName, previousQuestions=[]) {
   const excludeStr = previousQuestions.length > 0
-    ? `\nNEVER ask these questions again (already asked):\n${previousQuestions.slice(-20).map(q=>`- ${q}`).join("\n")}`
+    ? `\nDo NOT repeat these questions:\n${previousQuestions.slice(-20).map(q=>`- ${q}`).join("\n")}`
     : "";
-  const raw = await ai(
-    `LifeRPG intake quiz. Arc: ${arcName}. Goal: "${goalText}"\n`+
-    `Generate 5 questions that reveal real detail about this person relevant to THIS specific goal.\n`+
-    `Topics: their current situation, obstacles, past attempts, lifestyle context, identity around this goal.\n`+
-    `Options must sound like real people talking — not survey answers. Be specific to the goal.\n`+
-    excludeStr+
-    `\nRETURN ONLY A RAW JSON ARRAY — nothing before [, nothing after ]. No keys, no wrapper object.\n`+
-    `CORRECT FORMAT: [{"q":"...","opts":["...","...","...","..."]},...]\n`+
-    `WRONG FORMAT: {"questions":[...]} or any object wrapper.\n`+
-    `Start your response with [ and end with ].`, 1400);
 
-  // Extract array even if model wraps it in an object
+  const raw = await ai(
+    `You are a quiz designer for LifeRPG.\nArc: ${arcName}. Player's goal: "${goalText}"\n\n`+
+    `Write exactly 5 short questions to understand this person's starting point for this goal.\n`+
+    `Each question needs 3-4 answer options that sound like real people talking.\n`+
+    excludeStr+
+    `\nOUTPUT RULES — follow exactly:\n`+
+    `- Output ONLY the JSON array. No intro text. No explanation. No markdown.\n`+
+    `- First character must be [. Last character must be ].\n`+
+    `- Schema: [{"q":"question text","opts":["option 1","option 2","option 3","option 4"]}]\n`+
+    `- Exactly 5 objects in the array.\n`, 1200);
+
   let parsed = null;
+  let lastErr = "";
+
+  // Strategy 1: find outermost [ ... ]
   try {
-    const clean = raw.replace(/^```(?:json)?\s*/i,"").replace(/\s*```\s*$/,"").trim();
-    // Try direct array parse first
-    const arrStart = clean.indexOf("[");
-    const arrEnd   = clean.lastIndexOf("]");
-    if (arrStart !== -1 && arrEnd > arrStart) {
-      try { parsed = JSON.parse(clean.slice(arrStart, arrEnd+1)); } catch(_) {}
-    }
-    // Fallback: full parse and unwrap common wrappers
-    if (!Array.isArray(parsed)) {
-      const obj = JSON.parse(clean);
-      if (Array.isArray(obj)) parsed = obj;
-      else if (Array.isArray(obj.questions)) parsed = obj.questions;
-      else if (Array.isArray(obj.quiz)) parsed = obj.quiz;
-      else throw new Error("Response was an object, not an array");
-    }
-  } catch(e) {
-    throw new Error("Quiz generation failed — " + e.message);
+    const s = raw.indexOf("[");
+    const e = raw.lastIndexOf("]");
+    if (s !== -1 && e > s) parsed = JSON.parse(raw.slice(s, e + 1));
+  } catch(e) { lastErr = e.message; }
+
+  // Strategy 2: strip markdown fences then try again
+  if (!Array.isArray(parsed)) {
+    try {
+      const clean = raw.replace(/^```(?:json)?[\s]*/i,"").replace(/[\s]*```[\s]*$/,"").trim();
+      const s = clean.indexOf("[");
+      const e = clean.lastIndexOf("]");
+      if (s !== -1 && e > s) parsed = JSON.parse(clean.slice(s, e + 1));
+    } catch(e) { lastErr = e.message; }
   }
 
-  if (!Array.isArray(parsed) || parsed.length === 0) throw new Error("Parse failed — empty or invalid array");
-  // Validate structure
-  const valid = parsed.filter(q => q.q && Array.isArray(q.opts) && q.opts.length >= 2);
-  if (valid.length === 0) throw new Error("Questions missing required fields");
+  // Strategy 3: full parse then unwrap wrapper objects
+  if (!Array.isArray(parsed)) {
+    try {
+      const clean = raw.replace(/^```(?:json)?[\s]*/i,"").replace(/[\s]*```[\s]*$/,"").trim();
+      const obj = JSON.parse(clean);
+      if (Array.isArray(obj)) parsed = obj;
+      else {
+        const keys = Object.keys(obj);
+        for (const k of keys) {
+          if (Array.isArray(obj[k]) && obj[k].length > 0) { parsed = obj[k]; break; }
+        }
+      }
+    } catch(e) { lastErr = e.message; }
+  }
+
+  // Strategy 4: regex extract any JSON array from the response
+  if (!Array.isArray(parsed)) {
+    try {
+      const match = raw.match(/\[\s*\{[\s\S]*?\}\s*\]/);
+      if (match) parsed = JSON.parse(match[0]);
+    } catch(e) { lastErr = e.message; }
+  }
+
+  if (!Array.isArray(parsed) || parsed.length === 0)
+    throw new Error("Connection issue — please try again");
+
+  const valid = parsed.filter(q =>
+    q && typeof q.q === "string" && q.q.length > 3 &&
+    Array.isArray(q.opts) && q.opts.length >= 2
+  );
+  if (valid.length === 0)
+    throw new Error("Unexpected response format — trying again");
+
   return valid.slice(0, 5);
 }
 
@@ -855,52 +695,41 @@ async function genStepHack(stepTitle, goalText) {
     `Max 20 words. No fluff. Start with a verb.`, 120);
 }
 
-async function genBossHack(questTitle) {
-  return haiku(
-    `LifeRPG boss quest hack. Quest: "${questTitle}".\n`+
-    `Write ONE practical tip that makes completing this quest easier.\n`+
-    `Format: "[short action verb phrase] — [brief reason why it works]"\n`+
-    `Examples:\n`+
-    `"Put your phone in another room — removes the temptation before it starts"\n`+
-    `"Set a timer before you start — makes the task feel finite and achievable"\n`+
-    `Max 20 words. No fluff. Start with a verb.`, 120);
-}
 
 
 async function genJourney(goalText, arcName, quizSummary, otherGoals=[], deadline="") {
   const today2 = new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});
   const deadlineStr = deadline
-    ? `Today is ${today2}. Target completion date: ${deadline}. IMPORTANT: space the 10 steps across this exact timeline — early steps this week, later steps closer to the deadline. Make the pacing realistic.\n`
+    ? `Today is ${today2}. Target completion date: ${deadline}. Space the 10 steps across this timeline.\n`
     : `Today is ${today2}.\n`;
-  const arr = parseJSON(await ai(
+  const raw = await ai(
     `LifeRPG journey. Goal: "${goalText}". Arc: ${arcName}.\n`+
     deadlineStr+
-    `Player: ${quizSummary?quizSummary.slice(0,300):"No quiz data."}\n\n`+
-    `Generate 10 steps toward this exact goal.\n`+
-    `Step 1: achievable today. Each step builds on the last. Get progressively harder.\n`+
-    `Be specific to THIS goal. No generic advice.\n\n`+
-    `Return ONLY a JSON array:\n`+
+    `Player context: ${quizSummary?quizSummary.slice(0,300):"No quiz data."}\n\n`+
+    `Generate exactly 10 steps toward this goal. Step 1 achievable today. Each builds on the last.\n`+
+    `Be specific to THIS goal. No generic advice.\n`+
+    `OUTPUT: ONLY a JSON array, nothing else. Start with [ end with ].\n`+
     `[{"title":"step title max 10 words","xp":50,"coins":12}]\n`+
-    `XP: steps 1-4: 30-60, steps 5-7: 60-100, steps 8-10: 100-180.`));
-  if (!Array.isArray(arr)) throw new Error("Parse failed");
-  return arr.slice(0,10);
+    `XP: steps 1-4: 30-60, steps 5-7: 60-100, steps 8-10: 100-180.`);
+  let parsed = null;
+  try {
+    const s = raw.indexOf("["), e = raw.lastIndexOf("]");
+    if (s !== -1 && e > s) parsed = JSON.parse(raw.slice(s, e+1));
+  } catch(_) {}
+  if (!Array.isArray(parsed) || parsed.length === 0) {
+    try {
+      const clean = raw.replace(/^```(?:json)?\s*/i,"").replace(/\s*```\s*$/,"").trim();
+      const s = clean.indexOf("["), e = clean.lastIndexOf("]");
+      if (s !== -1 && e > s) parsed = JSON.parse(clean.slice(s, e+1));
+    } catch(_) {}
+  }
+  if (!Array.isArray(parsed) || parsed.length === 0) throw new Error("Journey generation failed — could not parse response");
+  const valid = parsed.filter(s => s && typeof s.title === "string" && s.title.length > 2);
+  if (valid.length === 0) throw new Error("Journey generation failed — no valid steps returned");
+  return valid.slice(0, 10);
 }
 
 // Concurrency-limited parallel execution — never more than `limit` promises in flight
-async function parallelLimit(tasks, limit=2) {
-  const results = [];
-  const executing = [];
-  for (const task of tasks) {
-    const p = Promise.resolve().then(task);
-    results.push(p);
-    if (limit <= tasks.length) {
-      const e = p.finally(() => executing.splice(executing.indexOf(e), 1));
-      executing.push(e);
-      if (executing.length >= limit) await Promise.race(executing);
-    }
-  }
-  return Promise.allSettled(results);
-}
 
 const STAT_ICONS_J = { STR:"💪", INT:"📚", CHA:"🤝", DIS:"🎯", WLT:"💰", VIT:"❤️" };
 const getJourneyIcon = stat => STAT_ICONS_J[stat]||"⚡";
@@ -924,22 +753,6 @@ async function genCoachReply(message, context) {
     `Reply in 2-4 sentences. Be direct, practical and specific. You can help with: game strategy, goal-setting, skill recommendations, book suggestions, research topics, motivation, and life advice. No fluff.`, 600);
 }
 
-async function genSkillQuests(skill, arcName) {
-  const arr = parseJSON(await ai(
-    `LifeRPG skill quests for: "${skill}". Arc: ${arcName}.\n`+
-    `Generate 3 quests. Return ONLY JSON array:\n`+
-    `[{id,stat,icon,title,e,ex,ec,ee,m,mx,mc,me,h,hx,hc,he}]`, 1000));
-  if (!Array.isArray(arr)) throw new Error("Parse failed");
-  return arr.map((q,i) => ({
-    id:"sk_"+(q.id||i), stat:q.stat||"INT", icon:q.icon||"📚",
-    baseTitle:q.title||"Learn something", repeatable:true, timeTag:"any",
-    difficulties:[
-      { label:"Easy",   title:String(q.e||"Easy task"),   xp:Number(q.ex)||25,  coins:Number(q.ec)||7,  est:String(q.ee||"10min") },
-      { label:"Medium", title:String(q.m||"Medium task"), xp:Number(q.mx)||55,  coins:Number(q.mc)||14, est:String(q.me||"20min") },
-      { label:"Hard",   title:String(q.h||"Hard task"),   xp:Number(q.hx)||110, coins:Number(q.hc)||28, est:String(q.he||"45min") },
-    ],
-  }));
-}
 
 async function genSkillQuiz(skill) {
   const raw = await haiku(
@@ -987,130 +800,81 @@ const Bar = ({ val, max, color, h=5 }) => {
   );
 };
 const PAGE_INFO = {
-  home: {
-    title: "Home",
-    body: "Your command centre. Active journey steps appear in a carousel — swipe between goal and skill journeys. Complete steps here or navigate to the Quest Log for the full view.",
-    howto: [
-      "Swipe the carousel with ‹ › to switch between your active journeys. Cyan dots are skill journeys, coloured dots are goal journeys.",
-      "Tap 'Complete ✓' on the current step card to mark it done and write a note.",
-      "'View all →' takes you straight to the All Journeys tab in Quest Log.",
-      "Daily Review unlocks after 9pm — generates a reflection and sets tomorrow's intention.",
-      "The tile grid links to every area of the app: Quest Log, Boss Battle, Profile, Goals, Coach, Shop, Achievements, and Settings.",
-    ],
-  },
-  quests: {
-    title: "Quest Log",
-    body: "Four tabs: Goal Journeys, Skill Quests, All Journeys, and the weekly summary.",
-    howto: [
-      "Goal Journeys: your active 10-step goal paths. Tap 'Mark Complete' on the current step.",
-      "Skill Quests: enter any skill to start a 4-question assessment, then get a personalised 5-step skill journey. Generator always stays at the top, your journeys list below.",
-      "All Journeys: every active and completed journey in one view — goal journeys and skill journeys together.",
-      "Week: AI weekly performance report. Unlocks after 3 active journeys.",
-    ],
-  },
   boss: {
     title: "Boss Battle",
-    body: "Your arc boss is the psychological obstacle blocking your goals. Boss quests are AI-generated specifically from your goals — they're side missions that directly relate to what you're trying to achieve, mixed with a few lifestyle habits.",
+    body: "The main screen. Completing journey steps, skill steps, and daily habits all damage the boss. Only journey steps deal permanent damage — completing a full 10-step journey kills the boss.",
     howto: [
-      "Boss quests are generated using your actual goals the first time you save a goal. They update each time you add a new goal.",
-      "Complete all quests, then tap 'Refresh Boss Quests' to get a new AI-generated set based on your current goals.",
-      "More active journeys = more quests = faster boss kill. 1 journey: 3 quests (~1 week). 2: 5 quests. 3+: 7 quests (1-2 days).",
-      "Medium difficulty deals 8 HP damage, Hard deals 16 HP. The boss regens 5 HP each day you don't fight.",
-      "Complete 4+ Hard quests in one session to trigger Fury Mode — double damage for remaining quests.",
-    ],
-  },
-  profile: {
-    title: "Profile — Overview",
-    body: "Your character sheet: power, XP, profile summary, achievements, and equipped gear.",
-    howto: [
-      "Profile Summary unlocks after 3 journeys. Tap the 🧠 card to expand it, then 'Generate Profile' for your AI analysis.",
-      "The summary draws from all your quiz answers across every goal — it builds a clearer picture each time you add one.",
-      "Tap 'Regenerate' after setting more goals to get an updated profile.",
-      "Achievements shows your 3 most recent. Tap 'View all achievements →' for the full list.",
-    ],
-  },
-  "profile-stats": {
-    title: "Profile — Stats",
-    body: "Six attributes shape your character. Each grows when you complete quests tied to it. An unbalanced character will fail when it matters.",
-    howto: [
-      "STR (Strength): physical quests — workouts, runs, sport.",
-      "INT (Intelligence): learning quests — reading, courses, writing.",
-      "CHA (Charisma): social quests — calls, networking, presenting.",
-      "WLT (Wealth): financial quests — saving, tracking, income actions.",
-      "VIT (Vitality): health quests — sleep, hydration, nutrition.",
-      "DIS (Discipline): habit quests — meditation, journalling, planning.",
-      "Stats below 40 show a decay warning. Complete at least one quest in that stat to stop the decline.",
-      "The radar chart shows your balance across all six. Watch for blind spots.",
-    ],
-  },
-  coach: {
-    title: "Coach",
-    body: "A direct AI advisor with context on your arc, goals, stats, and quiz answers. Ask it anything — strategy, books, habits, how to push through a hard period.",
-    howto: [
-      "Be direct: 'What should I focus on this week?' or 'Give me 3 books for my goals'.",
-      "The Coach knows your arc, power, and goals — use that context.",
-      "Quick question chips appear on first open. Use them to get oriented.",
-    ],
-  },
-  shop: {
-    title: "Shop",
-    body: "Spend coins on consumables and gear. One free item rotates daily — don't miss it.",
-    howto: [
-      "Claim your free daily item first — it changes every 24 hours.",
-      "XP Surge doubles XP on your next completed quest. Use it on a Hard quest for maximum value.",
-      "Streak Shield protects your streak for one missed day. Buy it before a busy period.",
-      "Boss Freeze stops the boss regenerating HP for 2 days — useful when you need a break.",
-      "Gear gives permanent stat XP bonuses while equipped. Equip from the Inventory screen.",
+      "GOAL ATTACKS: journey steps deal permanent damage (30→220 HP across 10 steps). Completing the full journey kills the boss.",
+      "SKILL ATTACKS: roll the dice — 20% miss (0 damage), 30% hit then boss heals 70% back immediately, 50% clean hit (boss regens 75% at midnight).",
+      "DAILY HABITS: 6 HP chip damage each. Boss regens all habit damage overnight.",
+      "FURY MODE: every 3rd action of any type triggers 24h of double damage. Threshold drops as boss HP falls.",
+      "Tap the boss emoji to read lore. Tap 📖 top-right for your defeated boss journal.",
     ],
   },
   goals: {
     title: "Goals",
-    body: "Set up to 2 goals per stat (12 total). Each goal triggers its own 5-question quiz and generates a personalised 10-step journey paced to your target date.",
+    body: "Set your real goals here. Each triggers a 5-question quiz then a personalised 10-step AI journey. The journey is your weapon — completing it kills the boss.",
     howto: [
-      "Be specific: 'Run a 5k by June' generates far better steps than 'get fit'.",
-      "Add a target date — the AI spaces your 10 steps across the full timeline.",
-      "Tap the ▼ 'Suggested' toggle under any attribute to see goal ideas. Tap one to pre-fill.",
-      "After saving a goal, a 5-question quiz launches specific to that goal. No question is ever repeated.",
-      "Quiz answers build your Profile Summary and make every future journey generation more accurate.",
-      "Tap any existing goal to see its journey progress.",
+      "Write goals in your own words. 'Run a 5k by June' generates far better steps than 'get fit'.",
+      "Set a target date — the AI spaces your 10 steps realistically across that timeline.",
+      "After saving a goal, a 5-question quiz runs specific to that goal. No question is ever repeated.",
+      "Tap any active goal to see journey progress, change the deadline, or generate a new journey.",
+      "Skill Journeys tab: type any skill for a 4-question assessment and personalised 5-step skill journey.",
     ],
   },
-  skills: {
-    title: "Skill Tree — Mastery",
-    body: "Complete skill journeys to build mastery in each stat category. Higher tiers grant XP bonuses on future journeys in that stat.",
+  profile: {
+    title: "Profile",
+    body: "Your character card, XP bar, AI profile summary, achievements, and equipped gear. Tap ⚙️ top-right for Settings.",
     howto: [
-      "Each completed skill journey adds to that stat's mastery count.",
-      "1 journey: 🌱 Apprentice. 3: 🥉 Adept (+10% XP). 7: 🥈 Veteran (+25% XP). 15: 🥇 Master (+50% XP).",
-      "The XP bonus applies automatically when you complete a skill journey step — the more journeys you've done in a stat, the more XP each new one rewards.",
-      "In-progress skill journeys show under each stat so you can see where you are.",
-      "Quest Chains tab has multi-step challenges you can add to your daily quest log.",
+      "Tap Edit ✏️ on your character card to change name, avatar, username, or PIN.",
+      "Profile Summary (🧠) unlocks after 3 journeys — tap it then 'Generate Profile' for an AI analysis from all your quiz answers.",
+      "Achievements shows your 3 most recent. Tap 'View all achievements →' for the full list.",
+      "Tap ⚙️ top-right to open Settings.",
     ],
   },
-  achievements: {
-    title: "Achievements",
-    body: "25 milestones that unlock automatically as you play. Track streaks, boss kills, quests, and stats.",
+  coach: {
+    title: "Coach",
+    body: "A direct AI advisor with full context on your arc, goals, and quiz answers.",
     howto: [
-      "Locked achievements show exactly what's required.",
-      "Achievement popups appear mid-session when you hit a milestone.",
-      "Some require specific actions: reading boss lore, using a Streak Shield, completing quest chains.",
+      "Be specific: 'What's the highest-leverage thing I should do this week for my 5k goal?' beats 'What should I do?'",
+      "Ask for book recommendations, habit suggestions, or a breakdown of what to prioritise.",
+      "Use the quick question chips on first open to get oriented fast.",
     ],
   },
-  inventory: {
-    title: "Inventory",
-    body: "Items from the shop and daily free claims. Gear boosts stat XP permanently while equipped.",
+  shop: {
+    title: "Shop",
+    body: "Spend coins earned from completing actions. One free item resets every 24 hours — claim it first.",
     howto: [
-      "Tap Equip on any gear item to slot it in. Only one item per slot.",
-      "Equipping new gear replaces whatever was there — the old item goes back to your bag.",
-      "Consumables are single-use. Tap Use at the right moment — not when you're on a streak of good days.",
+      "Claim your free daily item first — it changes every 24 hours.",
+      "XP Surge doubles XP on your next completed action. Best used on a journey step.",
+      "Streak Shield protects your streak for one missed day. Buy it before a known busy period.",
+      "Gear gives permanent stat bonuses while equipped. Equip from your Inventory.",
     ],
   },
   settings: {
     title: "Settings",
-    body: "Account management and the full user guide. Your game data is stored locally under your username and PIN — same credentials load your game on any device.",
+    body: "Profile editing, account management, and the user guide.",
     howto: [
-      "Switch Account to load a different username/PIN combination without losing your current save.",
-      "Reset Game permanently deletes all progress for @" + "your current account — this cannot be undone.",
-      "Tap 'User Guide' for a full step-by-step guide to every screen in the app.",
+      "Edit Profile: change name, avatar, username, or PIN without losing progress.",
+      "Switch Account: load a different save — enter username and PIN.",
+      "Reset Game: permanently deletes all progress. Cannot be undone.",
+      "User Guide: step-by-step instructions for every screen.",
+    ],
+  },
+  achievements: {
+    title: "Achievements",
+    body: "25 milestones unlock automatically as you play.",
+    howto: [
+      "Popups appear mid-session when you hit a milestone.",
+      "Locked achievements show exactly what's required.",
+    ],
+  },
+  inventory: {
+    title: "Inventory",
+    body: "Items from the shop and daily free claims. Gear boosts stats while equipped.",
+    howto: [
+      "Tap Equip on any gear item — one item per slot.",
+      "Consumables are single-use — tap Use at the right moment.",
     ],
   },
 };
@@ -1204,28 +968,6 @@ const TabBar = ({ tabs, active, onChange }) => (
   </div>
 );
 // Shared difficulty picker modal (daily quests, boss quests, weekly)
-const DiffModal = ({ quest, onPick, onClose, showDmg=false }) => (
-  <Modal onClose={onClose}>
-    <div style={{ fontSize:14, fontWeight:700, marginBottom:14 }}>{quest.icon} {quest.baseTitle}</div>
-    {quest.difficulties.map((d,i) => (
-      <div key={i} onClick={()=>onPick(i)} style={{
-        background:T.card, border:"1px solid "+(DC[d.label]||T.border)+"44",
-        borderRadius:10, padding:"12px 14px", marginBottom:8, cursor:"pointer",
-        display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-        <div>
-          <div style={{ marginBottom:4 }}><Tag color={DC[d.label]||T.gold}>{d.label}</Tag></div>
-          <div style={{ fontSize:12, fontWeight:700, marginBottom:2 }}>{d.title}</div>
-          <div style={{ fontSize:10, color:T.textSecondary }}>~{d.est}</div>
-        </div>
-        <div style={{ textAlign:"right" }}>
-          <div style={{ fontSize:11, fontWeight:700, color:T.gold }}>+{d.xp}XP</div>
-          <div style={{ fontSize:10, color:T.mint }}>+{d.coins}🪙</div>
-          {showDmg && d.dmg && <div style={{ fontSize:10, color:T.red }}>-{d.dmg}HP</div>}
-        </div>
-      </div>
-    ))}
-  </Modal>
-);
 // Shared quest completion modal (daily + weekly)
 const QuestDoneModal = ({ quest, note, setNote, onConfirm, onClose, placeholder="How did it go?" }) => {
   const m = SM[quest.stat]||SM.STR;
@@ -1398,70 +1140,6 @@ const DDOverlay = ({children}) => (
 );
 
 // ─── CUSTOM QUEST MODAL ───────────────────────────────────────────
-function CustomQuestModal({ arc, existingIds, onAdd, onClose }) {
-  const [title,setTitle]     = useState("");
-  const [stat,setStat]       = useState(arc.stat);
-  const [loading,setLoading] = useState(false);
-  const [preview,setPreview] = useState(null);
-  const [err,setErr]         = useState("");
-
-  async function generate() {
-    if (!title.trim()) return;
-    setLoading(true); setErr(""); setPreview(null);
-    try { setPreview(await genCustomQuestDifficulty(title.trim(), stat)); }
-    catch(e) { setErr("Failed to generate. Try again."); }
-    finally { setLoading(false); }
-  }
-
-  function add() {
-    if (!preview) return;
-    onAdd({ id:"cq_"+Date.now(), stat, icon:"✏️", baseTitle:title.trim(),
-      timeTag:"any", repeatable:true, isCustom:true,
-      difficulties:[
-        { label:"Easy",   title:preview.easy.title,   xp:preview.easy.xp,   coins:preview.easy.coins,   est:preview.easy.est },
-        { label:"Medium", title:preview.medium.title, xp:preview.medium.xp, coins:preview.medium.coins, est:preview.medium.est },
-        { label:"Hard",   title:preview.hard.title,   xp:preview.hard.xp,   coins:preview.hard.coins,   est:preview.hard.est },
-      ]});
-    onClose();
-  }
-
-  return (
-    <Modal onClose={onClose}>
-      <div style={{ fontSize:14, fontWeight:700, marginBottom:14 }}>✏️ Create Custom Quest</div>
-      <div style={{ fontSize:10, color:T.textMuted, marginBottom:6 }}>QUEST NAME</div>
-      <input value={title} onChange={e=>setTitle(e.target.value)} placeholder="E.g. Practice guitar for 20 mins…"
-        style={{ width:"100%", background:T.card, border:"1px solid "+T.border, borderRadius:8,
-          padding:"10px 12px", fontSize:12, color:T.textPrimary, outline:"none", marginBottom:12, boxSizing:"border-box" }}/>
-      <div style={{ fontSize:10, color:T.textMuted, marginBottom:6 }}>STAT</div>
-      <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:14 }}>
-        {SKEYS.map(k => { const m=SM[k]; return (
-          <div key={k} onClick={()=>setStat(k)} style={{ padding:"5px 10px", borderRadius:8, fontSize:10, fontWeight:700, cursor:"pointer",
-            background:stat===k?m.color+"22":T.card, border:"1px solid "+(stat===k?m.color:T.border),
-            color:stat===k?m.color:T.textMuted }}>{m.icon} {m.label}</div>
-        ); })}
-      </div>
-      {err && <div style={{ fontSize:10, color:T.red, marginBottom:8 }}>{err}</div>}
-      {preview && (
-        <div style={{ background:T.card, borderRadius:10, padding:12, marginBottom:14 }}>
-          <div style={{ fontSize:10, color:T.textMuted, marginBottom:8 }}>AI-GENERATED DIFFICULTIES</div>
-          {["easy","medium","hard"].map(d => (
-            <div key={d} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8 }}>
-              <div><Tag color={DC[d.charAt(0).toUpperCase()+d.slice(1)]||T.gold}>{d}</Tag><span style={{ fontSize:11, marginLeft:8, color:T.textPrimary }}>{preview[d].title}</span></div>
-              <div style={{ fontSize:9, color:T.textMuted }}>+{preview[d].xp}XP · {preview[d].coins}🪙</div>
-            </div>
-          ))}
-        </div>
-      )}
-      <div style={{ display:"flex", gap:8 }}>
-        {!preview
-          ? <div onClick={generate} style={{ flex:2, background:title.trim()&&!loading?T.blue:T.border, borderRadius:9, padding:11, textAlign:"center", color:title.trim()&&!loading?T.void:T.textMuted, fontWeight:700, cursor:title.trim()&&!loading?"pointer":"default" }}>{loading?"Generating…":"✨ Generate"}</div>
-          : <><div onClick={add}          style={{ flex:2, background:T.gold,   borderRadius:9, padding:11, textAlign:"center", color:T.void,        fontWeight:700, cursor:"pointer" }}>Add to Log</div>
-               <div onClick={()=>setPreview(null)} style={{ flex:1, background:T.card, border:"1px solid "+T.border, borderRadius:9, padding:11, textAlign:"center", color:T.textSecondary, fontWeight:700, cursor:"pointer" }}>Redo</div></>}
-        <div onClick={onClose} style={{ flex:1, background:T.border, borderRadius:9, padding:11, textAlign:"center", color:T.textSecondary, fontWeight:700, cursor:"pointer" }}>Cancel</div>
-      </div>
-    </Modal>
-  );
-}
 
 // ─── SETUP & ONBOARDING ───────────────────────────────────────────
 // ─── GOAL QUIZ ───────────────────────────────────────────────────
@@ -1600,66 +1278,68 @@ function PinEntry({ label, onConfirm, onBack, error }) {
 }
 
 // Sub-components for onboarding steps that need hooks (refs)
-function NameStep({ name, age, avatar, AVTS, onBack, onNext, setAv }) {
-  const nameRef = useRef(null);
-  const ageRef  = useRef(null);
-  const T2 = T; // closure
+function NameStep({ name, age, avatar, gender, setGender, AVTS_MALE, AVTS_FEMALE, onBack, onNext, setAv }) {
+  const AVTS = gender==="female" ? AVTS_FEMALE : AVTS_MALE;
   return (
-    <div style={{ display:"flex", flexDirection:"column", background:T2.void, color:T2.textPrimary, padding:"24px 16px 20px" }}>
-      <div style={{ fontSize:24, fontWeight:900, marginBottom:4, textAlign:"center" }}>Who are you?</div>
-      <div style={{ display:"flex", gap:10, marginBottom:14 }}>
-        <input ref={nameRef} defaultValue={name} placeholder="Your name…" autoComplete="off"
-          style={{ flex:2, background:T2.card, border:"1px solid "+T2.gold+"66", borderRadius:10, padding:"12px 14px", fontSize:14, fontWeight:600, color:T2.textPrimary, outline:"none", boxSizing:"border-box" }}/>
-        <input ref={ageRef} defaultValue={age} placeholder="Age" inputMode="numeric" autoComplete="off"
-          style={{ flex:1, background:T2.card, border:"1px solid "+T2.border, borderRadius:10, padding:"12px 14px", fontSize:14, color:T2.textPrimary, outline:"none", boxSizing:"border-box" }}/>
+    <div style={{ display:"flex", flexDirection:"column", background:T.void, color:T.textPrimary, padding:"24px 16px 20px" }}>
+      {/* Name/age summary with back to edit */}
+      <div style={{ background:T.card, border:"1px solid "+T.border, borderRadius:10, padding:"10px 14px", marginBottom:16, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+        <div>
+          <div style={{ fontSize:15, fontWeight:700, color:T.textPrimary }}>{name}</div>
+          <div style={{ fontSize:11, color:T.textSecondary }}>Age {age}</div>
+        </div>
+        <div onClick={onBack} style={{ fontSize:11, color:T.gold, cursor:"pointer", fontWeight:700, padding:"6px 10px", border:"1px solid "+T.gold+"44", borderRadius:7 }}>Edit ✏️</div>
       </div>
-      <div style={{ fontSize:9, letterSpacing:"0.1em", color:T2.textMuted, marginBottom:10 }}>CHOOSE YOUR AVATAR</div>
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:8, marginBottom:16 }}>
-        {AVTS.map((av,i) => (
-          <div key={i} onClick={()=>setAv(i)} style={{ background:avatar===i?T2.gold+"22":T2.card, border:"2px solid "+(avatar===i?T2.gold:"transparent"), borderRadius:12, padding:"8px 4px", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:3, cursor:"pointer", height:72 }}>
-            <span style={{ fontSize:26 }}>{av.e}</span>
-            <span style={{ fontSize:8, color:avatar===i?T2.gold:T2.textMuted, textAlign:"center", lineHeight:1.2 }}>{av.l}</span>
+      <div style={{ fontSize:9, letterSpacing:"0.1em", color:T.textMuted, marginBottom:8 }}>CHOOSE YOUR AVATAR</div>
+      {/* Gender tabs — Male / Female only */}
+      <div style={{ display:"flex", gap:8, marginBottom:10 }}>
+        {[["male","♂ Male"],["female","♀ Female"]].map(([val,label])=>(
+          <div key={val} onClick={()=>{ setGender(val); setAv(0); }}
+            style={{ flex:1, background:gender===val?T.gold+"22":T.card, border:"2px solid "+(gender===val?T.gold:T.border), borderRadius:8, padding:"8px 0", textAlign:"center", fontSize:11, fontWeight:gender===val?700:400, color:gender===val?T.gold:T.textSecondary, cursor:"pointer" }}>
+            {label}
           </div>
         ))}
       </div>
-      <div style={{ display:"flex", gap:8 }}>
-        <div onClick={onBack} style={{ flex:1, background:T2.border, borderRadius:10, padding:"12px 16px", textAlign:"center", color:T2.textMuted, fontWeight:700, fontSize:13, cursor:"pointer" }}>← Back</div>
-        <div onClick={()=>{
-          const n=(nameRef.current?.value||"").trim().toUpperCase();
-          const a=(ageRef.current?.value||"").replace(/\D/g,"");
-          if(n&&a) onNext(n,a);
-        }} style={{ flex:2, background:T2.gold, borderRadius:10, padding:"12px 16px", textAlign:"center", color:T2.void, fontWeight:700, fontSize:13, cursor:"pointer" }}>NEXT →</div>
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:8, marginBottom:16 }}>
+        {AVTS.map((av,i) => (
+          <div key={i} onClick={()=>setAv(i)} style={{ background:avatar===i?T.gold+"22":T.card, border:"2px solid "+(avatar===i?T.gold:"transparent"), borderRadius:12, padding:"8px 4px", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:3, cursor:"pointer", height:72 }}>
+            <span style={{ fontSize:26 }}>{av.e}</span>
+            <span style={{ fontSize:8, color:avatar===i?T.gold:T.textMuted, textAlign:"center", lineHeight:1.2 }}>{av.l}</span>
+          </div>
+        ))}
+      </div>
+      <div onClick={onNext} style={{ background:T.gold, borderRadius:10, padding:"14px 16px", textAlign:"center", color:T.void, fontWeight:700, fontSize:14, cursor:"pointer" }}>
+        NEXT →
       </div>
     </div>
   );
 }
 
-function UsernameStep({ name, arcId, un, setUN, onBack, onNext }) {
+function UsernameStep({ name, un, setUN, onBack, onNext }) {
   const unRef = useRef(null);
-  const T2 = T;
   const doGenerate = useCallback(() => {
-    const g2 = genUN(name, arcId);
+    const g2 = genUN(name);
     setUN(g2);
     if (unRef.current) unRef.current.value = g2;
-  }, [name, arcId, setUN]);
+  }, [name, setUN]);
   return (
-    <div style={{ display:"flex", flexDirection:"column", minHeight:"100vh", background:T2.void, color:T2.textPrimary, padding:"28px 16px" }}>
+    <div style={{ display:"flex", flexDirection:"column", background:T.void, color:T.textPrimary, padding:"28px 16px" }}>
       <div style={{ fontSize:22, fontWeight:900, marginBottom:6, textAlign:"center" }}>Choose Your Username</div>
-      <div style={{ fontSize:11, color:T2.textSecondary, marginBottom:16, textAlign:"center" }}>Your username loads your game on any device.</div>
-      <div style={{ background:T2.panel, border:"1px solid "+T2.gold+"66", borderRadius:10, padding:"4px 4px 4px 14px", marginBottom:12, display:"flex", alignItems:"center", gap:8 }}>
+      <div style={{ fontSize:11, color:T.textSecondary, marginBottom:16, textAlign:"center" }}>Your username loads your game on any device.</div>
+      <div style={{ background:T.panel, border:"1px solid "+T.gold+"66", borderRadius:10, padding:"4px 4px 4px 14px", marginBottom:12, display:"flex", alignItems:"center", gap:8 }}>
         <input ref={unRef} defaultValue={un} autoComplete="off" autoCapitalize="characters"
-          placeholder="USERNAME" style={{ flex:1, background:"transparent", border:"none", fontSize:16, fontWeight:700, color:T2.gold, outline:"none", padding:"8px 0" }}/>
-        <div onClick={doGenerate} style={{ background:T2.card, border:"1px solid "+T2.border, borderRadius:8, padding:"8px 12px", fontSize:11, color:T2.textSecondary, cursor:"pointer", flexShrink:0 }}>Generate</div>
+          placeholder="USERNAME" style={{ flex:1, background:"transparent", border:"none", fontSize:16, fontWeight:700, color:T.gold, outline:"none", padding:"8px 0" }}/>
+        <div onClick={doGenerate} style={{ background:T.card, border:"1px solid "+T.border, borderRadius:8, padding:"8px 12px", fontSize:11, color:T.textSecondary, cursor:"pointer", flexShrink:0 }}>Generate</div>
       </div>
-      {!un && <div onClick={doGenerate} style={{ background:T2.border, borderRadius:10, padding:"12px 16px", textAlign:"center", color:T2.textSecondary, fontWeight:700, fontSize:13, cursor:"pointer", marginBottom:8 }}>Generate Username</div>}
-      <div style={{ background:T2.gold+"11", border:"1px solid "+T2.gold+"33", borderRadius:10, padding:12, marginBottom:16, flex:1 }}>
-        <div style={{ fontSize:10, fontWeight:700, color:T2.gold, marginBottom:4 }}>⚠️ Screenshot this username</div>
-        <div style={{ fontSize:10, color:T2.textSecondary }}>Combined with your PIN, this is how you load your game on any device. Write both down.</div>
+      {!un && <div onClick={doGenerate} style={{ background:T.border, borderRadius:10, padding:"12px 16px", textAlign:"center", color:T.textSecondary, fontWeight:700, fontSize:13, cursor:"pointer", marginBottom:8 }}>Generate Username</div>}
+      <div style={{ background:T.gold+"11", border:"1px solid "+T.gold+"33", borderRadius:10, padding:12, marginBottom:16 }}>
+        <div style={{ fontSize:10, fontWeight:700, color:T.gold, marginBottom:4 }}>⚠️ Screenshot this username</div>
+        <div style={{ fontSize:10, color:T.textSecondary }}>Combined with your PIN, this is how you load your game on any device. Write both down.</div>
       </div>
       <div style={{ display:"flex", gap:8 }}>
-        <div onClick={onBack} style={{ flex:1, background:T2.border, borderRadius:10, padding:"12px 16px", textAlign:"center", color:T2.textMuted, fontWeight:700, fontSize:13, cursor:"pointer" }}>← Back</div>
+        <div onClick={onBack} style={{ flex:1, background:T.border, borderRadius:10, padding:"14px 16px", textAlign:"center", color:T.textMuted, fontWeight:700, fontSize:14, cursor:"pointer" }}>← Back</div>
         <div onClick={()=>{ const v=(unRef.current?.value||"").toUpperCase().replace(/[^A-Z0-9_]/g,""); if(v.length>=3){setUN(v);onNext(v);} }}
-          style={{ flex:2, background:T2.gold, borderRadius:10, padding:"12px 16px", textAlign:"center", color:T2.void, fontWeight:700, fontSize:13, cursor:"pointer" }}>Set PIN →</div>
+          style={{ flex:2, background:T.gold, borderRadius:10, padding:"14px 16px", textAlign:"center", color:T.void, fontWeight:700, fontSize:14, cursor:"pointer" }}>Set PIN →</div>
       </div>
     </div>
   );
@@ -1667,21 +1347,18 @@ function UsernameStep({ name, arcId, un, setUN, onBack, onNext }) {
 
 function Onboarding({ onComplete }) {
   const [step,setStep]      = useState(0);
-  const [gender,setGender]  = useState("");
+  const [gender,setGender]  = useState("male");
   const [name,setName]      = useState("");
   const [age,setAge]        = useState("");
   const [avatar,setAv]      = useState(0);
-  const [arcId,setArc]      = useState("");
   const [un,setUN]          = useState("");
   const [pin,setPin]        = useState("");
   const [confirmPin,setCPin]= useState("");
   const [pinErr,setPinErr]  = useState("");
   const [loadOpen,setLO]    = useState(false);
   const [loadIn,setLI]      = useState("");
-  const [loadPin,setLPin]   = useState("");
   const [loadErr,setLE]     = useState("");
-  const [loadStep,setLS]    = useState("username"); // username | pin
-  const arc = getArc(arcId||"iron");
+  const [loadStep,setLS]    = useState("username");
 
   const AVTS_MALE    = [
     {e:"🧛‍♂️",l:"Vampire"},{e:"🏋️‍♂️",l:"Athlete"},{e:"👨‍🚀",l:"Astronaut"},{e:"🕵️‍♂️",l:"Detective"},
@@ -1696,10 +1373,22 @@ function Onboarding({ onComplete }) {
     {e:"🧌",l:"Troll"},{e:"🧙‍♀️",l:"Witch"},
   ];
   const AVTS_NEUTRAL = [
-    {e:"🧑‍🚀",l:"Astronaut"},{e:"👽",l:"Alien"},{e:"👻",l:"Ghost"},
-    {e:"🥷",l:"Ninja"},{e:"🤖",l:"Robot"},{e:"💀",l:"Skull"},{e:"🧌",l:"Troll"},
+    {e:"🧛‍♂️",l:"Vampire"},{e:"🧛‍♀️",l:"Vampire"},{e:"👻",l:"Ghost"},{e:"🥷",l:"Ninja"},
+    {e:"🤖",l:"Robot"},{e:"💀",l:"Skull"},{e:"👽",l:"Alien"},{e:"🧌",l:"Troll"},
   ];
-  const AVTS = gender==="male"?AVTS_MALE:gender==="female"?AVTS_FEMALE:AVTS_NEUTRAL;
+  const AVTS = gender==="female" ? AVTS_FEMALE : gender==="neutral" ? AVTS_NEUTRAL : AVTS_MALE;
+
+  const TOTAL = 4;
+  const Page = ({children}) => (
+    <div style={{ display:"flex", flexDirection:"column", minHeight:"100vh", background:T.void, color:T.textPrimary, padding:"28px 16px" }}>
+      {children}
+    </div>
+  );
+  const StepDots = ({n}) => (
+    <div style={{ display:"flex", gap:3, justifyContent:"center", marginBottom:20 }}>
+      {Array.from({length:TOTAL},(_,i)=>{ const bg=i<n?T.mint:i===n?T.gold:T.border; return <div key={i} style={{ width:i===n?24:6,height:4,borderRadius:99,background:bg,transition:"all 0.3s" }}/>; })}
+    </div>
+  );
 
   async function tryLoad(enteredPin) {
     const t = loadIn.trim().toUpperCase();
@@ -1710,99 +1399,85 @@ function Onboarding({ onComplete }) {
     onComplete(null, null, s);
   }
 
-  // PIN set step — need two matching entries
-  if (step===6 && !pin) return (
-    <PinEntry label="Set your 4-digit PIN" onConfirm={p=>setPin(p)} onBack={()=>setStep(5)}/>
-  );
-  if (step===6 && pin && !confirmPin) return (
-    <PinEntry key={"confirm-"+pin} label="Confirm your PIN" onConfirm={p=>{ if(p===pin){setCPin(p); onComplete({name:name.trim().toUpperCase(),age:parseInt(age)||25,avatar:AVTS[avatar].e,gender,arcId},un,null,pin);} else {setPin(""); setPinErr("PINs didn't match — try again.");}}} onBack={()=>setPin("")} error={pinErr}/>
+  // Load Saved Game modal — shown from step 0
+  const loadModal = loadOpen && (
+    <Modal onClose={()=>{ setLO(false); setLS("username"); setLE(""); }}>
+      <div style={{ fontSize:16, fontWeight:700, marginBottom:4 }}>Load Saved Game</div>
+      {loadStep==="username" && <>
+        <input value={loadIn} onChange={e=>{ setLI(e.target.value.toUpperCase()); setLE(""); }} placeholder="Your username…"
+          style={{ width:"100%", background:T.card, border:"1px solid "+(loadErr?T.red:T.border), borderRadius:10, padding:"12px 14px", fontSize:14, color:T.textPrimary, outline:"none", marginBottom:loadErr?8:14, boxSizing:"border-box" }}/>
+        {loadErr && <div style={{ fontSize:11, color:T.red, marginBottom:12 }}>{loadErr}</div>}
+        <div style={{ display:"flex", gap:8 }}>
+          <Btn onClick={async()=>{ const t=loadIn.trim().toUpperCase(); if(!t){setLE("Enter username.");return;} const s=await loadUN(t); if(!s){setLE(`No save for "${t}".`);return;} if(s.char?.pin){setLS("pin");}else{onComplete(null,null,s);} }} style={{ flex:2 }}>Next</Btn>
+          <Btn onClick={()=>{ setLO(false); setLS("username"); setLE(""); }} color={T.border} style={{ flex:1 }}>Cancel</Btn>
+        </div>
+      </>}
+      {loadStep==="pin" && <PinEntry label="Enter your PIN" onConfirm={p=>tryLoad(p)} onBack={()=>{ setLS("username"); setLE(""); }} error={loadErr}/>}
+    </Modal>
   );
 
-  const Page = ({children}) => <div style={{ display:"flex", flexDirection:"column", minHeight:"100vh", background:T.void, color:T.textPrimary, padding:"28px 16px" }}>{children}</div>;
-  const TOTAL = 6;
-  const StepDots = ({n}) => (
-    <div style={{ display:"flex", gap:3, justifyContent:"center", marginBottom:20 }}>
-      {Array.from({length:TOTAL},(_,i)=>{ const bg=i<n-1?T.mint:i===n-1?T.gold:T.border; return <div key={i} style={{ width:i===n-1?24:6,height:4,borderRadius:99,background:bg,transition:"all 0.3s" }}/>; })}
+  // Step 0 — Name + Age only
+  if (step===0) return (
+    <Page>
+      <StepDots n={0}/>
+      <div style={{ fontSize:24, fontWeight:900, marginBottom:4, textAlign:"center" }}>Who are you?</div>
+      <div style={{ fontSize:11, color:T.textSecondary, marginBottom:20, textAlign:"center" }}>Let's set up your character.</div>
+      <NameAgeInputs name={name} age={age} onNext={(n,a)=>{ setName(n); setAge(a); setStep(1); }}/>
+      <div onClick={()=>setLO(true)} style={{ textAlign:"center", padding:12, marginTop:16, border:"1px solid "+T.border, borderRadius:10, cursor:"pointer", fontSize:12, color:T.textSecondary }}>↩ Load Saved Game</div>
+      {loadModal}
+    </Page>
+  );
+
+  // Step 1 — Avatar (Male/Female tabs only)
+  if (step===1) return (
+    <div style={{ display:"flex", flexDirection:"column", background:T.void, color:T.textPrimary, padding:"24px 16px 20px" }}>
+      <StepDots n={1}/>
+      <NameStep name={name} age={age} avatar={avatar} gender={gender} setGender={setGender}
+        AVTS_MALE={AVTS_MALE} AVTS_FEMALE={AVTS_FEMALE}
+        onBack={()=>setStep(0)} setAv={setAv}
+        onNext={()=>setStep(2)}/>
     </div>
   );
 
-  // Step 0 — Gender
-  if (step===0) return (
-    <Page>
-      <StepDots n={1}/>
-      <div style={{ fontSize:24, fontWeight:900, marginBottom:4, textAlign:"center" }}>How do you identify?</div>
-      <div style={{ fontSize:11, color:T.textSecondary, marginBottom:28, textAlign:"center" }}>Filters your avatar options.</div>
-      <div style={{ flex:1 }}>
-        {[["male","Male","🤴"],["female","Female","👸"],["neutral","No Preference","⚔️"]].map(([val,label,em])=>(
-          <div key={val} onClick={()=>setGender(val)} style={{ background:gender===val?T.gold+"22":T.card, border:"2px solid "+(gender===val?T.gold:T.border), borderRadius:14, padding:"18px 20px", marginBottom:12, cursor:"pointer", display:"flex", alignItems:"center", gap:16 }}>
-            <span style={{ fontSize:32 }}>{em}</span>
-            <span style={{ fontSize:16, fontWeight:700, color:gender===val?T.gold:T.textPrimary }}>{label}</span>
-          </div>
-        ))}
-      </div>
-      <Btn onClick={()=>{ if(gender) setStep(1); }} disabled={!gender}>NEXT →</Btn>
-      <div onClick={()=>setLO(true)} style={{ textAlign:"center", padding:12, marginTop:10, border:"1px solid "+T.border, borderRadius:10, cursor:"pointer", fontSize:12, color:T.textSecondary }}>↩ Load Saved Game</div>
-      {loadOpen && <Modal onClose={()=>{ setLO(false); setLS("username"); setLE(""); }}>
-        <div style={{ fontSize:16, fontWeight:700, marginBottom:4 }}>Load Saved Game</div>
-        {loadStep==="username" && <>
-          <input value={loadIn} onChange={e=>{ setLI(e.target.value.toUpperCase()); setLE(""); }} placeholder="Your username…"
-            style={{ width:"100%", background:T.card, border:"1px solid "+(loadErr?T.red:T.border), borderRadius:10, padding:"12px 14px", fontSize:14, color:T.textPrimary, outline:"none", marginBottom:loadErr?8:14, boxSizing:"border-box" }}/>
-          {loadErr && <div style={{ fontSize:11, color:T.red, marginBottom:12 }}>{loadErr}</div>}
-          <div style={{ display:"flex", gap:8 }}>
-            <Btn onClick={async()=>{ const t=loadIn.trim().toUpperCase(); if(!t){setLE("Enter username.");return;} const s=await loadUN(t); if(!s){setLE(`No save for "${t}".`);return;} if(s.char?.pin){setLS("pin");}else{onComplete(null,null,s);} }} style={{ flex:2 }}>Next</Btn>
-            <Btn onClick={()=>{ setLO(false); setLS("username"); setLE(""); }} color={T.border} style={{ flex:1 }}>Cancel</Btn>
-          </div>
-        </>}
-        {loadStep==="pin" && <PinEntry label="Enter your PIN" onConfirm={p=>tryLoad(p)} onBack={()=>{ setLS("username"); setLE(""); }} error={loadErr}/>}
-      </Modal>}
-    </Page>
-  );
-
-  // Step 1 — Name + Age + Avatar
-  if (step===1) return (
-    <NameStep name={name} age={age} avatar={avatar} AVTS={AVTS} setAv={setAv}
-      onBack={()=>setStep(0)}
-      onNext={(n,a)=>{ setName(n); setAge(a); setStep(2); }}/>
-  );
-
-  // Step 2 — Arc
+  // Step 2 — Username
   if (step===2) return (
-    <Page>
-      <StepDots n={3}/>
-      <div style={{ fontSize:24, fontWeight:900, marginBottom:6, textAlign:"center" }}>Your arc</div>
-      <div style={{ fontSize:11, color:T.textSecondary, marginBottom:14, textAlign:"center" }}>Your arc shapes your boss battles and story.</div>
-      <div style={{ flex:1, overflowY:"auto", scrollbarWidth:"none" }}>
-        {ARCS.map(a => {
-          const sel = arcId===a.id;
-          return (
-            <div key={a.id} onClick={()=>setArc(a.id)} style={{ background:sel?a.color+"18":T.card, border:"2px solid "+(sel?a.color:"transparent"), borderRadius:14, padding:"14px 16px", marginBottom:10, cursor:"pointer" }}>
-              <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:sel?6:0 }}>
-                <div style={{ width:44, height:44, borderRadius:12, background:a.color+"22", border:"1px solid "+a.color+"44", display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, flexShrink:0 }}>{a.icon}</div>
-                <div style={{ flex:1 }}>
-                  <div style={{ fontSize:14, fontWeight:800, color:sel?a.color:T.textPrimary }}>{a.name}</div>
-                  <div style={{ fontSize:10, color:a.color, fontWeight:600 }}>{a.subtitle.toUpperCase()}</div>
-                </div>
-              </div>
-              {sel && <div style={{ fontSize:11, color:T.textSecondary, lineHeight:1.6 }}>{a.desc}</div>}
-            </div>
-          );
-        })}
-      </div>
-      <div style={{ display:"flex", gap:8, marginTop:12 }}>
-        <Btn onClick={()=>setStep(1)} color={T.border} style={{ flex:1 }}>← Back</Btn>
-        <Btn onClick={()=>{ if(arcId) setStep(3); }} disabled={!arcId} style={{ flex:2 }}>NEXT →</Btn>
-      </div>
-    </Page>
+    <UsernameStep name={name} un={un} setUN={setUN}
+      onBack={()=>setStep(1)}
+      onNext={(v)=>{ setUN(v); setStep(3); }}/>
   );
 
-  // Step 3 — Username
-  if (step===3) return (
-    <UsernameStep name={name.trim().toUpperCase()} arcId={arcId} un={un} setUN={setUN}
-      onBack={()=>setStep(2)}
-      onNext={(v)=>{ setUN(v); setStep(6); }}/>
+  // Step 3 — PIN
+  if (step===3 && !pin) return (
+    <PinEntry label="Set your 4-digit PIN" onConfirm={p=>setPin(p)} onBack={()=>setStep(2)}/>
+  );
+  if (step===3 && pin && !confirmPin) return (
+    <PinEntry key={"confirm-"+pin} label="Confirm your PIN"
+      onConfirm={p=>{ if(p===pin){ setCPin(p); onComplete({name:name.trim().toUpperCase(),age:parseInt(age)||25,avatar:(gender==="female"?AVTS_FEMALE:AVTS_MALE)[avatar].e,gender,arcId:""}, un, null, pin); } else { setPin(""); setPinErr("PINs didn't match — try again."); } }}
+      onBack={()=>setPin("")} error={pinErr}/>
   );
 
   return null;
+}
+
+// Extracted to avoid hooks-in-conditional issue
+function NameAgeInputs({ name, age, onNext }) {
+  const nameRef = useRef(null);
+  const ageRef  = useRef(null);
+  return (
+    <div>
+      <div style={{ display:"flex", gap:10, marginBottom:14 }}>
+        <input ref={nameRef} defaultValue={name} placeholder="Your name…" autoComplete="off"
+          style={{ flex:2, background:T.card, border:"1px solid "+T.gold+"66", borderRadius:10, padding:"12px 14px", fontSize:14, fontWeight:600, color:T.textPrimary, outline:"none", boxSizing:"border-box" }}/>
+        <input ref={ageRef} defaultValue={age} placeholder="Age" inputMode="numeric" autoComplete="off"
+          style={{ flex:1, background:T.card, border:"1px solid "+T.border, borderRadius:10, padding:"12px 14px", fontSize:14, color:T.textPrimary, outline:"none", boxSizing:"border-box" }}/>
+      </div>
+      <Btn onClick={()=>{
+        const n=(nameRef.current?.value||"").trim().toUpperCase();
+        const a=(ageRef.current?.value||"").replace(/\D/g,"");
+        if(n&&a) onNext(n,a);
+      }}>NEXT →</Btn>
+    </div>
+  );
 }
 
 
@@ -1873,12 +1548,12 @@ function useGame() {
       const bonus = calcLoginBonus(newStreak);
       const [nx,nl] = applyXP(g.xp, g.lv, bonus.xp);
 
-      save({...g, dDone:{}, bqDone:{}, bossQs:getBossQuests(g.arc,(g.journeys||[]).filter(j=>!j.complete&&j.currentStep<(j.steps||[]).length).length),
+      save({...g, dDone:{},
         lastReset:t, bossHp:bh, bossIdx:bi, actLog:log,
         momentum:Math.max(0,g.momentum-10), streak:newStreak, stats, bag:newBag, shieldsUsed,
         skillProg:{STR:0,INT:0,CHA:0,DIS:0,WLT:0,VIT:0}, skillUsed:[],
         bossQuestsToday:0, bossRageUntil:0, lastFightDate:null,
-        bossFrozen:Math.max(0,(g.bossFrozen||0)-1), checkin:null, bqTotalDone:0,
+        bossFrozen:Math.max(0,(g.bossFrozen||0)-1), checkin:null,
         bossUnlocksAt:null, bossDefeated:null,
         xp:nx, lv:nl, totalXP:g.totalXP+bonus.xp, coins:g.coins+bonus.coins, loginBonusClaimed:t});
 
@@ -2100,44 +1775,13 @@ function useGame() {
       } catch(_) {}
     });
     // Generate milestones
-    goals.forEach(async gt => { try { const ms=await genMilestones(gt,arc.name); addMilestones(gt,ms); } catch(_){} });
   }, [save]);
   const loadGame   = useCallback(s=>{ setG(normalise(s)); setLastUN(s.un); },[]);
   const setChosen  = useCallback((qs,extra={})=>up({...extra,daily:qs,chosen:true}),[up]);
-  const resetQs    = useCallback(()=>up({daily:[],chosen:false,dDone:{}}),[up]);
 
-  const addQs = useCallback(()=>setG(prev=>{
-    if (!prev) return prev;
-    const ex=new Set(prev.daily.map(q=>q.id));
-    const arc=getArc(prev.arc);
-    const nw=shuffle(DQ.filter(q=>!ex.has(q.id))).slice(0,12).map(q=>({...q,sd:1,isArc:q.stat===arc.stat}));
-    const s={...prev,daily:[...prev.daily,...nw]};
-    persist(s); setTimeout(()=>notify(`Added ${nw.length} quests!`),0); return s;
-  }),[notify]);
 
-  const refreshQs = useCallback(()=>setG(prev=>{
-    if (!prev) return prev;
-    const arc=getArc(prev.arc);
-    const done=prev.daily.filter(q=>prev.dDone[q.id]);
-    const active=prev.daily.filter(q=>!prev.dDone[q.id]);
-    const ex=new Set(prev.daily.map(q=>q.id));
-    const nw=shuffle(DQ.filter(q=>!ex.has(q.id))).slice(0,active.length).map(q=>({...q,sd:1,isArc:q.stat===arc.stat}));
-    const s={...prev,daily:[...done,...nw]};
-    persist(s); setTimeout(()=>notify("Quests refreshed!"),0); return s;
-  }),[notify]);
 
-  const refreshBQ = useCallback(()=>setG(prev=>{
-    if (!prev) return prev;
-    const doneCount=Object.keys(prev.bqDone||{}).length;
-    const s={...prev,bossQs:getBossQuests(prev.arc||"iron",(prev.journeys||[]).filter(j=>!j.complete&&j.currentStep<(j.steps||[]).length).length),bqDone:{},bqTotalDone:(prev.bqTotalDone||0)+doneCount};
-    persist(s); setTimeout(()=>notify("Boss quests refreshed!"),0); return s;
-  }),[notify]);
 
-  const addSkillQ = useCallback(q=>setG(prev=>{
-    if (!prev||!prev.chosen||prev.daily.find(x=>x.id===q.id)) return prev;
-    const s={...prev,daily:[...prev.daily,{...q,sd:1,isArc:q.stat===getArc(prev.arc).stat}],skillUsed:[...(prev.skillUsed||[]),q.id]};
-    persist(s); setTimeout(()=>notify(q.baseTitle+" added!"),0); return s;
-  }),[notify]);
 
   const updateSkillJourney = useCallback(journey => setG(prev => {
     if (!prev) return prev;
@@ -2168,99 +1812,6 @@ function useGame() {
     return s;
   }), []);
 
-  const addCustomQ = useCallback(q=>setG(prev=>{
-    if (!prev) return prev;
-    const s=award({...prev,daily:[...prev.daily,{...q,sd:1,isArc:q.stat===getArc(prev.arc).stat}],customQuestCount:(prev.customQuestCount||0)+1});
-    persist(s); setTimeout(()=>notify("Custom quest added! ✏️"),0); return s;
-  }),[notify,award]);
-
-  const completeQ = useCallback((qid,isBoss,note="")=>setG(prev=>{
-    if (!prev) return prev;
-    const list    = isBoss?prev.bossQs:prev.daily;
-    const doneMap = isBoss?prev.bqDone:prev.dDone;
-    if (doneMap[qid]) return prev;
-    const q = list.find(x=>x.id===qid);
-    if (!q) { console.warn("Quest not found:", qid, "isBoss:", isBoss); return prev; }
-
-    // Boss quests: flat damage, no difficulty selection
-    const xpBase   = isBoss ? (q.xp||50) : (() => { const di=q.sd??0; const d=q.difficulties[di]||q.difficulties[0]; return d.xp; })();
-    const coinsVal = isBoss ? (q.coins||14) : (() => { const di=q.sd??0; const d=q.difficulties[di]||q.difficulties[0]; return d.coins; })();
-    const xpGain   = Math.round(xpBase*(prev.xpMult?2:1));
-    const [nx,nl,lv] = applyXP(prev.xp, prev.lv, xpGain);
-    const stats  = {...prev.stats}; stats[q.stat]=Math.min(100,(stats[q.stat]||0)+Math.ceil(xpBase/20));
-    const sp     = {...prev.skillProg}; sp[q.stat]=(sp[q.stat]||0)+1;
-    const dm     = {...doneMap,[qid]:true};
-    const tl     = {...prev.tallies}; tl[qid]=(tl[qid]||0)+1;
-    const nt     = {...prev.notes}; if(note.trim()) nt[qid+"_"+Date.now()]={qid,note,date:today(),title:q.baseTitle};
-
-    // ── Fury logic ───────────────────────────────────────────────────
-    // Tracks total boss quests completed today (resets at midnight via normalise)
-    const bossQsToday = isBoss ? (prev.bossQuestsToday||0)+1 : (prev.bossQuestsToday||0);
-    const now_ts      = Date.now();
-    const furyActive  = isBoss && (prev.bossRageUntil||0) > now_ts;
-    // Every 3rd boss quest triggers/resets Fury for 24h
-    const newFuryUntil = isBoss && (bossQsToday % 3 === 0)
-      ? now_ts + 24*60*60*1000
-      : (prev.bossRageUntil||0);
-    const effectiveFury = furyActive || (isBoss && bossQsToday % 3 === 0);
-    const flatDmg   = q.dmg || 10;
-    const actualDmg = isBoss ? (effectiveFury ? flatDmg*2 : flatDmg) : 0;
-    const bh        = isBoss ? Math.max(0, prev.bossHp - actualDmg) : prev.bossHp;
-    const bdefeated = isBoss && bh<=0 && prev.bossHp>0;
-
-    const entry = {...q, at:Date.now(), diff:"Standard", xpEarned:xpGain, note:note.trim()};
-    let nextBossIdx=prev.bossIdx||0, nextBossHp=bh, nextBossUnlocksAt=prev.bossUnlocksAt||null;
-    let nextBossDefeated=prev.bossDefeated, newBossLore=prev.bossLore||[];
-    if (bdefeated) {
-      nextBossIdx       = ((prev.bossIdx||0)+1)%5;
-      nextBossHp        = getBoss(prev.arc,nextBossIdx).maxHp;
-      const midnight    = new Date(); midnight.setHours(24,0,0,0);
-      nextBossUnlocksAt = midnight.getTime();
-      const db          = getBoss(prev.arc,prev.bossIdx||0);
-      const drop        = db.drop;
-      nextBossDefeated  = {
-        boss:db, arc:getArc(prev.arc),
-        daysFought:Math.max(1,Math.round((Date.now()-new Date(prev.bossStartDate||today()).getTime())/(86400000))),
-        questsLanded:(prev.bqTotalDone||0)+Object.keys(prev.bqDone||{}).length,
-        drop,
-      };
-      if (!newBossLore.find(l=>l.name===db.name))
-        newBossLore = [...newBossLore,{name:db.name,emoji:db.emoji,lore:db.lore,taunt:getBossTaunt(db,0),defeated:today()}];
-    }
-
-    const base = {
-      ...prev, xp:nx, totalXP:prev.totalXP+xpGain, lv:nl, coins:prev.coins+coinsVal,
-      stats, skillProg:sp, momentum:Math.min(100,prev.momentum+5),
-      bossHp:nextBossHp, bossIdx:nextBossIdx, bossUnlocksAt:nextBossUnlocksAt,
-      bossStartDate: bdefeated ? today() : (prev.bossStartDate||today()),
-      bossQuestsToday: bossQsToday,
-      bossRageUntil: newFuryUntil,
-      lastFightDate: isBoss ? today() : prev.lastFightDate,
-      qDone:prev.qDone+1, xpMult:lv?false:prev.xpMult,
-      ...(isBoss?{bqDone:dm}:{dDone:dm}),
-      history:[...(prev.history||[]).slice(-199),entry], tallies:tl, notes:nt,
-      bossDefeated:nextBossDefeated, bossLore:newBossLore,
-      bossWins:bdefeated?(prev.bossWins||0)+1:(prev.bossWins||0),
-    };
-
-    // Add boss drop to inventory on defeat
-    if (bdefeated && nextBossDefeated.drop) {
-      const drop = nextBossDefeated.drop;
-      const dropItem = { id:`drop_${Date.now()}`, name:drop.name, icon:drop.icon,
-        type:"gear", stat:drop.stat, bonus:drop.bonus, equipped:false,
-        slot:"relic", desc:`Dropped by ${nextBossDefeated.boss.name}` };
-      base.inventory = [...(prev.inventory||[]), dropItem];
-    }
-
-    const s = award(base);
-    persist(s);
-    const notifyMsg = bdefeated ? "BOSS DEFEATED! 🏆"
-      : newFuryUntil > (prev.bossRageUntil||0) ? "⚡ FURY ACTIVATED — 24h of double damage!"
-      : lv ? "POWER UP! Pw."+nl
-      : "+"+xpGain+"XP · +"+coinsVal+"🪙";
-    setTimeout(()=>notify(notifyMsg), 0);
-    return s;
-  }),[notify,award]);
 
   const clearBD  = useCallback(()=>up({bossDefeated:null}),[up]);
 
@@ -2278,29 +1829,7 @@ function useGame() {
     persist(s); setTimeout(()=>notify("GOAL COMPLETE! +"+GOAL_XP+"XP 🏆"),0); return s;
   }),[notify,award]);
 
-  const doneMilestone = useCallback((gt,idx)=>setG(prev=>{
-    if (!prev) return prev;
-    const ms=[...(prev.milestones?.[gt]||[])]; if(!ms[idx]||ms[idx].done) return prev;
-    ms[idx]={...ms[idx],done:true};
-    const [nx,nl]=applyXP(prev.xp,prev.lv,MILESTONE_XP);
-    const s=award({...prev,xp:nx,totalXP:prev.totalXP+MILESTONE_XP,lv:nl,coins:prev.coins+MILESTONE_COINS,
-      milestones:{...prev.milestones,[gt]:ms},milestoneDoneCount:(prev.milestoneDoneCount||0)+1});
-    persist(s); setTimeout(()=>notify("Milestone done! +"+MILESTONE_XP+"XP"),0); return s;
-  }),[notify,award]);
 
-  const addMilestone  = useCallback((gt,text)=>up({milestones:{...(g?.milestones||{}),[gt]:[...(g?.milestones?.[gt]||[]),{text,done:false}]}}),[up,g]);
-  const addMilestones = useCallback((gt,arr)=>setG(prev=>{
-    if (!prev) return prev;
-    const existing=prev.milestones?.[gt]||[];
-    const s={...prev,milestones:{...prev.milestones,[gt]:[...existing,...arr]}};
-    persist(s); return s;
-  }),[]);
-  const logGP = useCallback((gt,val)=>setG(prev=>{
-    if (!prev) return prev;
-    const p=prev.gProgress?.[gt]||{logged:[]};
-    const s={...prev,gProgress:{...prev.gProgress,[gt]:{...p,logged:[...p.logged,{val,date:today()}]}}};
-    persist(s); return s;
-  }),[]);
 
   const setGoals       = useCallback((stat,gs)=>{
     const allGoals = {...(g?.goals||{}),[stat]:gs};
@@ -2308,9 +1837,6 @@ function useGame() {
     up({goals:allGoals, mainGoals:main});
   },[up,g]);
   const setGoalDeadline= useCallback((gt,deadline)=>setG(prev=>{ if(!prev)return prev; const s={...prev,goalDeadlines:{...prev.goalDeadlines,[gt]:deadline}}; persist(s); return s; }),[]);
-  const delQ           = useCallback(qid=>setG(prev=>{ if(!prev||prev.dDone[qid])return prev; const s={...prev,daily:prev.daily.filter(q=>q.id!==qid)}; persist(s); return s; }),[]);
-  const setQD          = useCallback((qid,di)=>setG(prev=>{ if(!prev)return prev; const s={...prev,daily:prev.daily.map(q=>q.id===qid?{...q,sd:di}:q)}; persist(s); return s; }),[]);
-  const setBQD         = useCallback((qid,di)=>setG(prev=>{ if(!prev)return prev; const s={...prev,bossQs:prev.bossQs.map(q=>q.id===qid?{...q,sd:di}:q)}; persist(s); return s; }),[]);
   const markLoreRead   = useCallback(()=>up({loreRead:(g?.loreRead||0)+1}),[up,g]);
 
   const buyItem  = useCallback(item=>setG(prev=>{
@@ -2340,9 +1866,9 @@ function useGame() {
   const resetGame      = useCallback(async()=>{ if(g){await deleteUN(g.un);await clearLastUN();} setG(null); },[g]);
   const switchAcc      = useCallback(async()=>{ await clearLastUN(); setG(null); },[]);
 
-  return { g,loaded,setG,startGame,loadGame,setChosen,resetQs,addQs,refreshQs,refreshBQ,addSkillQ,updateSkillJourney,addCustomQ,
-    completeQ,completeJourneyStep,completeSkillStep,completeHabit,addJourney,clearBD,saveCheckin,saveDR,completeGoal,doneMilestone,
-    addMilestone,addMilestones,logGP,setGoals,setGoalDeadline,delQ,setQD,setBQD,markLoreRead,
+  return { g,loaded,setG,startGame,loadGame,setChosen,updateSkillJourney,
+    completeJourneyStep,completeSkillStep,completeHabit,addJourney,clearBD,saveCheckin,saveDR,completeGoal,
+    setGoals,setGoalDeadline,markLoreRead,
     buyItem,claimFree,equipItem,useItem,resetGame,switchAcc,
     notify,toast,achPopup,setAchPopup };
 }
@@ -2443,228 +1969,8 @@ function Coach({ g, nav, seenScreens, markSeen }) {
   );
 }
 
-function StepsCarousel({ allJourneys, arc, nav, setCompJ, setCompSkillJ }) {
-  const [carIdx, setCarIdx] = useState(0);
-  const total = allJourneys.length;
-  const idx   = Math.min(carIdx, total-1);
-  const item  = allJourneys[idx];
-  const isSkill = !!item?.skill;
-  const m     = isSkill ? { icon:"🎯", color:T.cyan, label:"Skill" } : (SM[item?.stat]||SM.STR);
-  const step  = item?.steps[item.currentStep];
-  const label = isSkill ? item.skill : (item?.goalText||"");
-
-  return (
-    <div>
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8 }}>
-        <div style={{ fontSize:9, color:T.textSecondary, fontWeight:700, letterSpacing:"0.1em" }}>TODAY'S STEPS</div>
-        <div onClick={()=>nav("quests")} style={{ fontSize:9, color:arc.color, cursor:"pointer", fontWeight:700 }}>View all →</div>
-      </div>
-      <div style={{ background:T.card, border:"1px solid "+m.color+"44", borderRadius:12, padding:"12px 14px", marginBottom:8 }}>
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:4 }}>
-          <div style={{ fontSize:8, color:m.color, fontWeight:700, letterSpacing:"0.08em" }}>
-            {m.icon} {isSkill ? "Skill: " : ""}{label.slice(0,36)}{label.length>36?"…":""}
-          </div>
-          <div style={{ fontSize:8, color:T.textSecondary }}>{item.currentStep+1}/{item.steps.length}</div>
-        </div>
-        <Bar val={item.currentStep} max={item.steps.length} color={m.color} h={2}/>
-        <div style={{ fontSize:13, fontWeight:700, lineHeight:1.5, margin:"8px 0" }}>{step?.title}</div>
-        <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-          <span style={{ fontSize:9, color:T.gold }}>+{step?.xp}XP</span>
-          <span style={{ fontSize:9, color:T.mint }}>+{step?.coins}🪙</span>
-          <div onClick={()=>isSkill ? setCompSkillJ({journey:item,step}) : setCompJ({journey:item,step})}
-            style={{ marginLeft:"auto", background:m.color, borderRadius:8, padding:"6px 14px", fontSize:10, color:T.void, fontWeight:700, cursor:"pointer" }}>
-            Complete ✓
-          </div>
-        </div>
-      </div>
-      {total > 1 && (
-        <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:8, marginBottom:4 }}>
-          <div onClick={()=>setCarIdx(i=>Math.max(0,i-1))} style={{ fontSize:18, color:carIdx>0?T.textSecondary:T.border, cursor:carIdx>0?"pointer":"default" }}>‹</div>
-          <div style={{ display:"flex", gap:5 }}>
-            {allJourneys.map((j,i) => (
-              <div key={i} onClick={()=>setCarIdx(i)} style={{ width:i===idx?20:6, height:6, borderRadius:99,
-                background:i===idx?(j.skill?T.cyan:arc.color):T.border, transition:"all 0.2s", cursor:"pointer" }}/>
-            ))}
-          </div>
-          <div onClick={()=>setCarIdx(i=>Math.min(total-1,i+1))} style={{ fontSize:18, color:carIdx<total-1?T.textSecondary:T.border, cursor:carIdx<total-1?"pointer":"default" }}>›</div>
-        </div>
-      )}
-    </div>
-  );
-}
 
 // ─── HOME ─────────────────────────────────────────────────────────
-function Home({ g, nav, switchAcc, saveCheckin, saveDR, notify, completeJourneyStep, seenScreens, markSeen }) {
-  const arc  = getArc(g.arc);
-  const boss = getBoss(g.arc, g.bossIdx||0);
-  const dc   = Object.keys(g.dDone).length;
-  const title   = getTitle(g);
-  const last7 = Array.from({length:7},(_,i)=>{ const d=new Date(); d.setDate(d.getDate()-(6-i)); const ds=d.toDateString(); return {ds,n:i===6?dc:(g.actLog||{})[ds]||0}; });
-  const [showDR,setDR]=useState(null); const [genD,setGenD]=useState(false);
-  const [completingJ,setCompJ] = useState(null); const [jNote,setJNote] = useState("");
-  const drAvail = past9pm() && !(g.dailyReviews||{})[today()];
-  const todayDR = (g.dailyReviews||{})[today()];
-
-  const activeJourneys  = (g.journeys||[]).filter(j=>!j.complete && j.currentStep < (j.steps||[]).length);
-  const activeSkillJs   = (g.skillJourneys||[]).filter(j=>!j.complete && j.currentStep < (j.steps||[]).length);
-  const allActiveJs     = [...activeJourneys, ...activeSkillJs];
-  const generatingJourneys = (g.mainGoals||[]).length > 0 && (g.journeys||[]).length === 0;
-
-  async function doDR() {
-    setGenD(true);
-    try {
-      const done = (g.history||[]).filter(q=>new Date(q.at).toDateString()===today());
-      const ql   = done.map(q=>`- ${q.baseTitle} (${q.diff})${q.note?` — "${q.note}"`:""}`).join("\n")||"None completed.";
-      const rev  = await genDailyReview(g.char.name,arc.name,g.streak,g.momentum,ql);
-      rev.date   = new Date().toLocaleString("en-GB",{hour:"2-digit",minute:"2-digit",day:"numeric",month:"short"});
-      saveDR(rev); setDR(rev);
-    } catch(e) { notify("Daily review failed: "+e.message); }
-    setGenD(false);
-  }
-
-  const tiles = [
-    { icon:"📋", label:"Quests",       sub:activeJourneys.length+" active",                        color:T.gold,   v:"quests" },
-    { icon:"👹", label:"Boss",         sub:boss.name,                                               color:T.red,    v:"boss" },
-    { icon:g.char.avatar, label:"Profile", sub:"Pw."+g.lv,                                         color:T.purple, v:"profile" },
-    { icon:"🧙", label:"Coach",        sub:"Ask anything",                                          color:T.cyan,   v:"coach" },
-    
-    { icon:"🛒", label:"Shop",         sub:"Spend coins",                                           color:T.cyan,   v:"shop" },
-    
-    { icon:"🎯", label:"Goals",        sub:"Track your goals",                                      color:T.gold,   v:"goals" },
-    { icon:"🏅", label:"Achievements", sub:(g.achievements||[]).length+"/"+ACHIEVEMENTS.length,     color:T.gold,   v:"achievements" },
-    { icon:"⚙️", label:"Settings",    sub:"Account & guide",                                       color:T.textSecondary, v:"settings" },
-  ];
-
-  return (
-    <div>
-      {showDR && <DailyReviewModal review={showDR} onClose={()=>setDR(null)}/>}
-
-      {/* Journey step completion modal */}
-      {completingJ && (
-        <Modal onClose={()=>{ setCompJ(null); setJNote(""); }}>
-          <div style={{ textAlign:"center", marginBottom:14 }}>
-            <div style={{ fontSize:28, marginBottom:6 }}>{completingJ.journey.icon}</div>
-            <div style={{ fontSize:9, color:SM[completingJ.journey.stat]?.color, fontWeight:700, letterSpacing:"0.1em", marginBottom:6 }}>
-              STEP {completingJ.journey.currentStep+1} OF {completingJ.journey.steps.length}
-            </div>
-            <div style={{ fontSize:13, fontWeight:700, lineHeight:1.5 }}>{completingJ.step.title}</div>
-          </div>
-          <div style={{ fontSize:10, color:T.textMuted, marginBottom:6 }}>How did it go? <span style={{ color:T.textMuted, fontStyle:"italic" }}>(optional)</span></div>
-          <textarea value={jNote} onChange={e=>setJNote(e.target.value)} placeholder="Add a note about this step…"
-            style={{ width:"100%", background:T.card, border:"1px solid "+T.border, borderRadius:10, padding:"10px 12px",
-              fontSize:12, color:T.textPrimary, outline:"none", resize:"none", height:72, boxSizing:"border-box", marginBottom:12, fontFamily:"inherit" }}/>
-          <div style={{ display:"flex", gap:8 }}>
-            <Btn onClick={()=>{ completeJourneyStep(completingJ.journey.id, jNote); setCompJ(null); setJNote(""); }} style={{ flex:2 }}>✓ Mark Complete</Btn>
-            <Btn onClick={()=>{ setCompJ(null); setJNote(""); }} color={T.border} style={{ flex:1 }}>Cancel</Btn>
-          </div>
-        </Modal>
-      )}
-
-      {/* Hero header */}
-      <div style={{ background:"linear-gradient(180deg,#1a0820,#0d0d1a,#08080f)", padding:"24px 16px 16px", textAlign:"center", position:"relative" }}>
-        <div style={{ position:"absolute", top:24, right:14, display:"flex", alignItems:"center", gap:5,
-          background:T.gold+"22", border:"1px solid "+T.gold+"44", borderRadius:20, padding:"4px 10px" }}>
-          <span>🪙</span><span style={{ fontSize:12, fontWeight:700, color:T.gold }}>{g.coins.toLocaleString()}</span>
-        </div>
-        <div style={{ fontSize:56, marginBottom:6 }}>{g.char.avatar}</div>
-        <div style={{ fontSize:18, fontWeight:900 }}>{g.char.name}</div>
-        <div style={{ fontSize:10, color:title.color||T.gold, fontWeight:700, marginBottom:2 }}>{title.icon} {title.name}</div>
-        <div onClick={switchAcc} style={{ fontSize:10, color:T.textMuted, marginBottom:2, cursor:"pointer" }}>@{g.un} <span style={{ color:T.purple, fontSize:8 }}>switch ↩</span></div>
-        <div style={{ fontSize:10, color:T.textSecondary, letterSpacing:"0.1em", marginBottom:8 }}>Pw.{g.lv}{g.streak>0?" · 🔥"+g.streak+"d":""}</div>
-        <div style={{ display:"flex", justifyContent:"center", gap:6, marginBottom:10 }}>
-          {last7.map((day,i) => (
-            <div key={i} style={{ textAlign:"center" }}>
-              <div style={{ width:28, height:28, borderRadius:"50%", display:"flex", alignItems:"center", justifyContent:"center", fontSize:9,
-                background:day.n>0?T.gold+"33":T.border, border:"2px solid "+(day.n>0?T.gold:T.border),
-                color:day.n>0?T.gold:T.textMuted }}>{day.n>0?day.n:"·"}</div>
-              <div style={{ fontSize:7, color:T.textMuted, marginTop:2 }}>{"SMTWTFS"[new Date(day.ds).getDay()]}</div>
-            </div>
-          ))}
-        </div>
-        <div style={{ marginBottom:4 }}>
-          <div style={{ display:"flex", justifyContent:"space-between", marginBottom:2 }}>
-            <span style={{ fontSize:9, color:T.textMuted }}>XP</span>
-            <span style={{ fontSize:9, color:T.gold }}>{g.xp}/{xpForLv(g.lv)}</span>
-          </div>
-          <Bar val={g.xp} max={xpForLv(g.lv)} color={T.gold}/>
-        </div>
-        <div style={{ display:"flex", justifyContent:"space-between", marginTop:4, marginBottom:2 }}>
-          <span style={{ fontSize:9, color:T.textMuted }}>MOMENTUM</span>
-          <span style={{ fontSize:9, color:T.orange, fontWeight:700 }}>{g.momentum}%</span>
-        </div>
-        <Bar val={g.momentum} max={100} color={T.orange} h={3}/>
-      </div>
-
-      {/* Journey steps — carousel (goal + skill journeys) */}
-      <div style={{ padding:"12px 14px 0" }}>
-        {generatingJourneys && (
-          <div style={{ background:T.card, border:"1px solid "+arc.color+"33", borderRadius:12, padding:"14px 16px", textAlign:"center" }}>
-            <div style={{ fontSize:16, marginBottom:6 }}>⏳</div>
-            <div style={{ fontSize:12, fontWeight:700, color:arc.color, marginBottom:4 }}>Building your journeys…</div>
-            <div style={{ fontSize:10, color:T.textSecondary }}>This takes about 20 seconds. Your personalised steps will appear here.</div>
-          </div>
-        )}
-        {allActiveJs.length > 0 && (
-          <StepsCarousel allJourneys={allActiveJs} arc={arc} nav={nav} setCompJ={setCompJ}
-            setCompSkillJ={({journey,step})=>{
-              // Complete a skill journey step inline
-              const updatedSteps = journey.steps.map((s,i)=>
-                i===journey.currentStep ? {...s,done:true,doneDate:new Date().toString(),note:""} : s
-              );
-              const newIdx = journey.currentStep+1;
-              const updated = {...journey,steps:updatedSteps,currentStep:newIdx,complete:newIdx>=journey.steps.length};
-              // Call updateSkillJourney via prop — not available here, so navigate to quests
-              nav("quests");
-            }}/>
-        )}
-        {!generatingJourneys && allActiveJs.length===0 && ((g.journeys||[]).length>0||(g.skillJourneys||[]).length>0) && (
-          <div style={{ background:T.mint+"11", border:"1px solid "+T.mint+"33", borderRadius:12, padding:14, textAlign:"center" }}>
-            <div style={{ fontSize:24, marginBottom:6 }}>🏆</div>
-            <div style={{ fontSize:13, fontWeight:700, color:T.mint }}>All journeys complete!</div>
-            <div onClick={()=>nav("goals")} style={{ fontSize:10, color:T.blue, cursor:"pointer", marginTop:8 }}>Add a new goal to start a new journey →</div>
-          </div>
-        )}
-      </div>
-
-      {/* Unexpected Truth */}
-      <UnexpectedTruth g={g}/>
-
-      {/* Daily review cards */}
-      {drAvail && (
-        <div style={{ margin:"10px 14px 0", background:T.mint+"12", border:"1px solid "+T.mint+"44", borderRadius:12, padding:"10px 14px", display:"flex", alignItems:"center", gap:10 }}>
-          <span style={{ fontSize:20 }}>🌙</span>
-          <div style={{ flex:1 }}><div style={{ fontSize:11, fontWeight:700, color:T.mint }}>Daily Review Ready</div><div style={{ fontSize:10, color:T.textSecondary }}>Reflect on today and set tomorrow's intention.</div></div>
-          <div onClick={doDR} style={{ background:T.mint, borderRadius:8, padding:"5px 10px", fontSize:10, color:T.void, fontWeight:700, cursor:"pointer" }}>{genD?"…":"Generate"}</div>
-        </div>
-      )}
-      {!drAvail && todayDR && (
-        <div onClick={()=>setDR(todayDR)} style={{ margin:"10px 14px 0", background:T.panel, border:"1px solid "+T.border, borderRadius:10, padding:"8px 12px", display:"flex", alignItems:"center", gap:8, cursor:"pointer" }}>
-          <span>🌙</span><div style={{ flex:1 }}><div style={{ fontSize:10, fontWeight:700 }}>Tonight's Review</div><div style={{ fontSize:9, color:T.textMuted }}>{todayDR.date}</div></div><span style={{ fontSize:12, color:T.textMuted }}>›</span>
-        </div>
-      )}
-
-      {/* Tile grid */}
-      <div style={{ padding:14, display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
-        {tiles.map((t,i) => (
-          <div key={i} onClick={()=>nav(t.v)}
-            style={{ background:T.card, border:"1px solid "+t.color+"33",
-              borderRadius:12, padding:12, cursor:"pointer" }}>
-            <div style={{ fontSize:24, marginBottom:5 }}>{t.icon}</div>
-            <div style={{ fontSize:12, fontWeight:700, color:t.color, marginBottom:2 }}>{t.label}</div>
-            <div style={{ fontSize:9, color:T.textMuted }}>{t.sub}</div>
-          </div>
-        ))}
-      </div>
-      <div style={{ margin:"0 14px 20px", background:arc.color+"12", border:"1px solid "+arc.color+"44", borderRadius:10, padding:"8px 12px", display:"flex", gap:8, alignItems:"center" }}>
-        <span style={{ fontSize:16 }}>{arc.icon}</span>
-        <div>
-          <div style={{ fontSize:10, fontWeight:700, color:arc.color }}>Active Arc: {arc.name}</div>
-          <div style={{ fontSize:9, color:T.textSecondary }}>{boss.name} · {g.bossHp}/{boss.maxHp} HP</div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 // ─── WEEKLY SUMMARY TAB ───────────────────────────────────────────
 function WeeklySummaryTab({ g, summary, setSummary, genSum, setGenSum }) {
@@ -3170,185 +2476,6 @@ function JourneyCard({ j, onComplete }) {
 }
 
 // ─── QUESTS VIEW ──────────────────────────────────────────────────
-function Quests({ g, completeQ, completeJourneyStep, delQ, setQD, addCustomQ, addSkillQ, updateSkillJourney, setChosen, resetQs, addQs, refreshQs, nav, seenScreens, markSeen }) {
-  const [tab,setTab]       = useState("journeys");
-  const [diffM,setDiffM]   = useState(null);
-  const [manageM,setManM]  = useState(false);
-  const [resetM,setResetM] = useState(false);
-  const [doneM,setDoneM]   = useState(null); const [doneNote,setDN]=useState("");
-  const [customM,setCustomM]= useState(false);
-  const [summary,setSummary]= useState(null);
-  const [genSum,setGenSum]  = useState(false);
-  const [jNote,setJNote]    = useState(""); const [completingJ,setCompJ] = useState(null);
-  const arc  = getArc(g.arc);
-  const dc   = Object.keys(g.dDone||{}).length;
-  const activeJourneys = (g.journeys||[]).filter(j=>!j.complete && j.currentStep < (j.steps||[]).length);
-  const doneJourneys   = (g.journeys||[]).filter(j=>j.complete);
-  const active = g.daily.filter(q => !g.dDone[q.id]);
-  const done   = g.daily.filter(q =>  g.dDone[q.id]);
-  const mins   = active.reduce((s,q) => { const d=q.difficulties[q.sd??1]||q.difficulties[0]; return s+eMins(d.est||"0"); }, 0);
-  const sortedActive = useMemo(() => {
-    const hr = getHour();
-    return [...active].sort((a,b) => {
-      const ta = a.timeTag==="morning"&&hr<12?-1:a.timeTag==="evening"&&hr>=18?-1:0;
-      const tb = b.timeTag==="morning"&&hr<12?-1:b.timeTag==="evening"&&hr>=18?-1:0;
-      return ta-tb;
-    });
-  }, [active]);
-
-  return (
-    <div style={{ paddingBottom:80 }}>
-      {customM && <CustomQuestModal arc={arc} existingIds={g.daily.map(q=>q.id)} onAdd={addCustomQ} onClose={()=>setCustomM(false)}/>}
-      {doneM && <QuestDoneModal quest={doneM} note={doneNote} setNote={setDN}
-        onConfirm={()=>{ completeQ(doneM.id,false,doneNote); setDoneM(null); setDN(""); }}
-        onClose={()=>{ setDoneM(null); setDN(""); }}/>}
-      {diffM && <DiffModal quest={diffM} onPick={i=>{ setQD(diffM.id,i); setDiffM(null); }} onClose={()=>setDiffM(null)}/>}
-      {manageM && <Modal onClose={()=>setManM(false)}>
-        <div style={{ fontSize:14, fontWeight:700, marginBottom:14 }}>Manage Quests</div>
-        {[
-          { l:"+ Add More Quests",   s:"Pull in 12 additional quests.",         fn:()=>{ addQs(); setManM(false); } },
-          { l:"🔄 Refresh Quests",   s:"Swap out incomplete quests.",           fn:()=>{ refreshQs(); setManM(false); } },
-          { l:"⟳ Reset All Quests",  s:"Clear active quests and choose new.",   fn:()=>{ setManM(false); setResetM(true); }, red:true },
-        ].map((it,i) => (
-          <div key={i} onClick={it.fn} style={{ background:T.card, border:"1px solid "+(it.red?T.red+"33":T.border), borderRadius:10, padding:12, marginBottom:8, cursor:"pointer" }}>
-            <div style={{ fontSize:12, fontWeight:700, color:it.red?T.red:T.textPrimary, marginBottom:2 }}>{it.l}</div>
-            <div style={{ fontSize:10, color:T.textSecondary }}>{it.s}</div>
-          </div>
-        ))}
-      </Modal>}
-      {resetM && <Modal onClose={()=>setResetM(false)}>
-        <div style={{ fontSize:16, fontWeight:700, marginBottom:8 }}>Reset Active Quests?</div>
-        <div style={{ fontSize:11, color:T.textSecondary, marginBottom:16, lineHeight:1.6 }}>Removes all active quests. History is kept.</div>
-        <div style={{ display:"flex", gap:8 }}>
-          <div onClick={()=>{ resetQs(); setResetM(false); }} style={{ flex:2, background:T.gold, borderRadius:9, padding:11, textAlign:"center", color:T.void, fontWeight:700, cursor:"pointer" }}>Reset Active</div>
-          <div onClick={()=>setResetM(false)} style={{ flex:1, background:T.border, borderRadius:9, padding:11, textAlign:"center", color:T.textSecondary, fontWeight:700, cursor:"pointer" }}>Cancel</div>
-        </div>
-      </Modal>}
-
-      <Hdr title="Quest Log" page="quests" seenScreens={seenScreens} markSeen={markSeen} onBack={()=>nav("boss")} right={
-        <span style={{ fontSize:10, color:T.textSecondary }}>
-          {tab==="journeys"?activeJourneys.length+" active":tab==="skills"?"explore":tab==="all"?((g.journeys||[]).length+(g.skillJourneys||[]).length)+" total":(g.weeklyReviews?.length||0)}
-        </span>}/>
-      <TabBar tabs={[["journeys","Goal Journeys"],["skills","Skill Quests"],["all","All Journeys"],["summary","Week"]]} active={tab} onChange={setTab}/>
-
-      {/* Journey completion modal */}
-      {completingJ && (
-        <Modal onClose={()=>{ setCompJ(null); setJNote(""); }}>
-          <div style={{ textAlign:"center", marginBottom:14 }}>
-            <div style={{ fontSize:28, marginBottom:6 }}>{completingJ.journey.icon}</div>
-            <div style={{ fontSize:9, color:SM[completingJ.journey.stat]?.color, fontWeight:700, letterSpacing:"0.1em", marginBottom:4 }}>
-              STEP {completingJ.journey.currentStep+1} OF {completingJ.journey.steps.length} · {completingJ.journey.goalText.slice(0,50)}
-            </div>
-            <div style={{ fontSize:13, fontWeight:700, lineHeight:1.5 }}>{completingJ.step.title}</div>
-          </div>
-          <textarea value={jNote} onChange={e=>setJNote(e.target.value)} placeholder="How did this step go? (optional)"
-            style={{ width:"100%", background:T.card, border:"1px solid "+T.border, borderRadius:10, padding:"10px 12px",
-              fontSize:12, color:T.textPrimary, outline:"none", resize:"none", height:80, boxSizing:"border-box", marginBottom:12, fontFamily:"inherit" }}/>
-          <div style={{ display:"flex", gap:8 }}>
-            <Btn onClick={()=>{ completeJourneyStep(completingJ.journey.id, jNote); setCompJ(null); setJNote(""); }} style={{ flex:2 }}>✓ Mark Complete</Btn>
-            <Btn onClick={()=>{ setCompJ(null); setJNote(""); }} color={T.border} style={{ flex:1 }}>Cancel</Btn>
-          </div>
-        </Modal>
-      )}
-
-      <div style={{ padding:"12px 16px" }}>
-        <div style={{ display:tab==="journeys"?"block":"none" }}>
-            {activeJourneys.length===0 && (g.journeys||[]).length===0 && (
-              <div style={{ textAlign:"center", padding:30, color:T.textMuted }}>
-                <div style={{ fontSize:32, marginBottom:12 }}>⏳</div>
-                <div style={{ fontSize:13, fontWeight:700, marginBottom:6 }}>Building your journeys…</div>
-                <div style={{ fontSize:10, lineHeight:1.6 }}>Your personalised quest steps are being generated. This takes about 20 seconds after character creation.</div>
-              </div>
-            )}
-            {activeJourneys.map(j => (
-              <JourneyCard key={j.id} j={j} onComplete={(j2,s)=>setCompJ({journey:j2,step:s})}/>
-            ))}
-            {doneJourneys.length>0 && (
-              <div style={{ marginTop:8 }}>
-                <div style={{ fontSize:9, color:T.textMuted, fontWeight:700, marginBottom:8 }}>COMPLETED JOURNEYS</div>
-                {doneJourneys.map(j=>{const m=SM[j.stat]||SM.STR;return(
-                  <div key={j.id} style={{ background:T.mint+"11", border:"1px solid "+T.mint+"33", borderRadius:10, padding:"10px 12px", marginBottom:8, display:"flex", gap:10, alignItems:"center" }}>
-                    <span style={{ fontSize:20 }}>{j.icon}</span>
-                    <div style={{ flex:1 }}><div style={{ fontSize:12, fontWeight:700 }}>{j.goalText}</div><div style={{ fontSize:9, color:T.mint }}>{j.steps.length} steps · Complete</div></div>
-                    <span style={{ fontSize:16, color:T.mint }}>🏆</span>
-                  </div>
-                );})}
-              </div>
-            )}
-        </div>
-
-        <div style={{ display:tab==="skills"?"block":"none" }}>
-          <SkillQuestsTab g={g} updateSkillJourney={updateSkillJourney} arc={arc}/>
-        </div>
-
-        {tab==="all" && (() => {
-          const allGoalJs   = (g.journeys||[]);
-          const allSkillJs  = (g.skillJourneys||[]);
-          const activeGoal  = allGoalJs.filter(j=>!j.complete);
-          const doneGoal    = allGoalJs.filter(j=>j.complete);
-          const activeSkill = allSkillJs.filter(j=>!j.complete);
-          const doneSkill   = allSkillJs.filter(j=>j.complete);
-          return (
-            <div>
-              {activeGoal.length===0 && activeSkill.length===0 && (
-                <div style={{ textAlign:"center", padding:30, color:T.textSecondary, fontSize:11 }}>
-                  No journeys yet. Set goals and skill quests to get started.
-                </div>
-              )}
-              {activeGoal.length>0 && (
-                <div style={{ marginBottom:16 }}>
-                  <div style={{ fontSize:9, color:T.textSecondary, fontWeight:700, marginBottom:8, letterSpacing:"0.08em" }}>GOAL JOURNEYS · {activeGoal.length} active</div>
-                  {activeGoal.map(j=><JourneyCard key={j.id} j={j} onComplete={(j2,s)=>setCompJ({journey:j2,step:s})}/>)}
-                </div>
-              )}
-              {activeSkill.length>0 && (
-                <div style={{ marginBottom:16 }}>
-                  <div style={{ fontSize:9, color:T.cyan, fontWeight:700, marginBottom:8, letterSpacing:"0.08em" }}>SKILL JOURNEYS · {activeSkill.length} active</div>
-                  {activeSkill.map(j=><SkillJourneyCard key={j.id} j={j} onUpdate={updateSkillJourney}/>)}
-                </div>
-              )}
-              {(doneGoal.length>0||doneSkill.length>0) && (
-                <div>
-                  <div style={{ fontSize:9, color:T.mint, fontWeight:700, marginBottom:8, letterSpacing:"0.08em" }}>COMPLETED</div>
-                  {doneGoal.map(j=>(
-                    <div key={j.id} style={{ background:T.mint+"11", border:"1px solid "+T.mint+"22", borderRadius:10, padding:"10px 12px", marginBottom:8, display:"flex", gap:10, alignItems:"center" }}>
-                      <span style={{ fontSize:20 }}>{j.icon}</span>
-                      <div style={{ flex:1 }}><div style={{ fontSize:12, fontWeight:700 }}>{j.goalText}</div><div style={{ fontSize:9, color:T.mint }}>{j.steps.length} steps · Goal Journey</div></div>
-                      <span style={{ fontSize:16, color:T.mint }}>🏆</span>
-                    </div>
-                  ))}
-                  {doneSkill.map(j=>(
-                    <div key={j.id} style={{ background:T.cyan+"11", border:"1px solid "+T.cyan+"22", borderRadius:10, padding:"10px 12px", marginBottom:8, display:"flex", gap:10, alignItems:"center" }}>
-                      <span style={{ fontSize:20 }}>🎯</span>
-                      <div style={{ flex:1 }}><div style={{ fontSize:12, fontWeight:700 }}>{j.skill}</div><div style={{ fontSize:9, color:T.cyan }}>{j.steps.length} steps · Skill Journey</div></div>
-                      <span style={{ fontSize:16, color:T.mint }}>🏆</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          );
-        })()}
-
-        {tab==="summary" && (
-          (() => {
-            const activeJ = (g.journeys||[]).filter(j=>!j.complete && j.currentStep < (j.steps||[]).length);
-            if (activeJ.length < 3) return (
-              <div style={{ textAlign:"center", padding:40, color:T.textMuted }}>
-                <div style={{ fontSize:32, marginBottom:12 }}>📊</div>
-                <div style={{ fontSize:13, fontWeight:700, marginBottom:8, color:T.textPrimary }}>Weekly Summary locked</div>
-                <div style={{ fontSize:11, lineHeight:1.7 }}>Set at least 3 goals and start their journeys to unlock your weekly performance report. You have {activeJ.length} active journey{activeJ.length!==1?"s":""}.</div>
-                <div onClick={()=>nav("goals")} style={{ marginTop:20, background:T.gold, borderRadius:10, padding:"10px 16px", fontSize:12, color:T.void, fontWeight:700, cursor:"pointer", display:"inline-block" }}>Set Goals →</div>
-              </div>
-            );
-            return <WeeklySummaryTab g={g} summary={summary} setSummary={setSummary} genSum={genSum} setGenSum={setGenSum}/>;
-          })()
-        )}
-
-      </div>
-    </div>
-  );
-}
 
 // ─── BOSS DEFEAT CARD ────────────────────────────────────────────
 function BossDefeatCard({ g, clearBD }) {
@@ -4075,9 +3202,223 @@ function NoteInput({ onDone, onCancel }) {
   );
 }
 
+function ProfileSummaryCard({ g, arc, setG }) {
+  const journeyCount = (g.journeys||[]).length;
+  const locked = journeyCount < 3;
+  const [sumOpen, setSumOpen] = useState(false);
+  const [sumLoading, setSumLoad] = useState(false);
+  const [sumErr, setSumErr] = useState("");
+  const hasSummary = !!g.profileSummary;
+
+  async function generate() {
+    setSumLoad(true); setSumErr("");
+    try {
+      const allAnswers = (g.quizAnswers||[]).join(" | ");
+      const result = await genProfileSummary(g.char.name, arc.name, g.mainGoals||[], allAnswers, g.journeys||[]);
+      if (!result?.overview) throw new Error("Invalid response");
+      setG(prev => { if(!prev)return prev; const n={...prev,profileSummary:result}; persist(n); return n; });
+    } catch(e) { setSumErr(e.message||"Failed. Try again."); }
+    finally { setSumLoad(false); }
+  }
+
+  return (
+    <div style={{ background:T.card, border:"1px solid "+(locked?T.border:T.purple+"44"), borderRadius:12, padding:"12px 14px", marginBottom:12 }}>
+      <div onClick={()=>!locked&&setSumOpen(x=>!x)} style={{ display:"flex", alignItems:"center", gap:10, cursor:locked?"default":"pointer" }}>
+        <div style={{ fontSize:20 }}>🧠</div>
+        <div style={{ flex:1 }}>
+          <div style={{ fontSize:12, fontWeight:700, color:locked?T.textMuted:T.purple }}>Profile Summary</div>
+          <div style={{ fontSize:9, color:T.textMuted }}>{locked?`Unlocks after 3 journeys (${journeyCount}/3 created)`:hasSummary?"AI analysis of your habits and goals":"Tap to generate your AI profile"}</div>
+        </div>
+        {!locked && <span style={{ fontSize:14, color:T.textMuted }}>{sumOpen?"↑":"↓"}</span>}
+      </div>
+      {sumOpen && !locked && (
+        <div style={{ marginTop:12 }}>
+          {!hasSummary && !sumLoading && !sumErr && (
+            <div onClick={generate} style={{ background:T.purple, borderRadius:9, padding:"10px 14px", textAlign:"center", color:T.void, fontWeight:700, fontSize:12, cursor:"pointer" }}>Generate Profile →</div>
+          )}
+          {sumLoading && <div style={{ fontSize:11, color:T.purple, textAlign:"center", padding:8 }}>⏳ Analysing your journey data…</div>}
+          {sumErr && <div style={{ fontSize:10, color:T.red, marginBottom:8 }}>{sumErr}<span onClick={generate} style={{ color:T.purple, cursor:"pointer", marginLeft:6 }}>Retry</span></div>}
+          {hasSummary && g.profileSummary && (
+            <div>
+              <div style={{ fontSize:11, color:T.textSecondary, lineHeight:1.75, marginBottom:12, padding:"8px 12px", background:T.panel, borderRadius:8 }}>{g.profileSummary.overview}</div>
+              {g.profileSummary.strengths?.length>0 && (
+                <div style={{ marginBottom:10 }}>
+                  <div style={{ fontSize:9, color:T.mint, fontWeight:700, marginBottom:5 }}>STRENGTHS</div>
+                  {g.profileSummary.strengths.map((s,i)=><div key={i} style={{ fontSize:10, color:T.textSecondary, marginBottom:3, display:"flex", gap:6 }}><span style={{ color:T.mint }}>✓</span>{s}</div>)}
+                </div>
+              )}
+              {g.profileSummary.studyTopics?.length>0 && (
+                <div style={{ marginBottom:10 }}>
+                  <div style={{ fontSize:9, color:T.blue, fontWeight:700, marginBottom:5 }}>STUDY & LEARN</div>
+                  {g.profileSummary.studyTopics.map((s,i)=><div key={i} style={{ fontSize:10, color:T.textSecondary, marginBottom:3, display:"flex", gap:6 }}><span style={{ color:T.blue }}>📖</span>{s}</div>)}
+                </div>
+              )}
+              {g.profileSummary.tips?.length>0 && (
+                <div style={{ marginBottom:10 }}>
+                  <div style={{ fontSize:9, color:T.gold, fontWeight:700, marginBottom:5 }}>TIPS FOR YOUR GOALS</div>
+                  {g.profileSummary.tips.map((s,i)=><div key={i} style={{ fontSize:10, color:T.textSecondary, marginBottom:3, display:"flex", gap:6 }}><span style={{ color:T.gold }}>→</span>{s}</div>)}
+                </div>
+              )}
+              {g.profileSummary.nextFocus && (
+                <div style={{ background:T.gold+"11", border:"1px solid "+T.gold+"33", borderRadius:8, padding:"8px 10px", marginBottom:10 }}>
+                  <div style={{ fontSize:9, color:T.gold, fontWeight:700, marginBottom:3 }}>FOCUS THIS WEEK</div>
+                  <div style={{ fontSize:11, color:T.textPrimary }}>{g.profileSummary.nextFocus}</div>
+                </div>
+              )}
+              <div onClick={generate} style={{ fontSize:9, color:T.purple, cursor:"pointer", textAlign:"right" }}>↻ Regenerate</div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── EDIT PROFILE MODAL ───────────────────────────────────────────
+function EditProfileModal({ g, onClose, setG }) {
+  const AVTS_MALE = [
+    {e:"🧛‍♂️",l:"Vampire"},{e:"🏋️‍♂️",l:"Athlete"},{e:"👨‍🚀",l:"Astronaut"},{e:"🕵️‍♂️",l:"Detective"},
+    {e:"👻",l:"Ghost"},{e:"🥷",l:"Ninja"},{e:"🤴",l:"Prince"},{e:"👨‍🎤",l:"Punk"},
+    {e:"🤖",l:"Robot"},{e:"💀",l:"Skull"},{e:"👽",l:"Alien"},{e:"👨‍💻",l:"Tech Wiz"},
+    {e:"🧌",l:"Troll"},{e:"🧙‍♂️",l:"Wizard"},
+  ];
+  const AVTS_FEMALE = [
+    {e:"🧛‍♀️",l:"Vampire"},{e:"🏋️‍♀️",l:"Athlete"},{e:"👩‍🚀",l:"Astronaut"},{e:"🕵️‍♀️",l:"Detective"},
+    {e:"👻",l:"Ghost"},{e:"🥷",l:"Ninja"},{e:"👸",l:"Princess"},{e:"👩‍🎤",l:"Punk"},
+    {e:"🤖",l:"Robot"},{e:"💀",l:"Skull"},{e:"👽",l:"Alien"},{e:"👩‍💻",l:"Tech Wiz"},
+    {e:"🧌",l:"Troll"},{e:"🧙‍♀️",l:"Witch"},
+  ];
+
+  const [section, setSection] = useState("main"); // main | avatar | username | pin
+  const [gender, setGender]   = useState(g.char?.gender||"male");
+  const [avatar, setAvatar]   = useState(null); // null = keep current
+  const [nameVal, setNameVal] = useState(g.char?.name||"");
+  const [unVal, setUnVal]     = useState(g.un||"");
+  const [pin1, setPin1]       = useState("");
+  const [pin2, setPin2]       = useState("");
+  const [pinErr, setPinErr]   = useState("");
+  const [saved, setSaved]     = useState(false);
+  const nameRef = useRef(null);
+  const unRef   = useRef(null);
+
+  const AVTS = gender==="female" ? AVTS_FEMALE : AVTS_MALE;
+  const currentAvatarIdx = avatar !== null ? avatar : AVTS.findIndex(a => a.e === g.char?.avatar);
+  const displayAvatar = avatar !== null ? AVTS[avatar].e : (g.char?.avatar||"🧙‍♂️");
+
+  function save() {
+    const newName = (nameRef.current?.value||nameVal).trim().toUpperCase() || g.char?.name;
+    const newUn   = (unRef.current?.value||unVal).toUpperCase().replace(/[^A-Z0-9_]/g,"") || g.un;
+    setG(prev => {
+      if (!prev) return prev;
+      const n = { ...prev,
+        un: newUn,
+        char: { ...prev.char,
+          name: newName,
+          avatar: displayAvatar,
+          gender,
+        }
+      };
+      persist(n); return n;
+    });
+    setSaved(true);
+    setTimeout(onClose, 700);
+  }
+
+  function savePIN() {
+    if (pin1.length !== 4) { setPinErr("Enter a 4-digit PIN"); return; }
+    if (pin1 !== pin2) { setPinErr("PINs don't match"); setPin2(""); return; }
+    setG(prev => {
+      if (!prev) return prev;
+      const n = { ...prev, char: { ...prev.char, pin: pin1 } };
+      persist(n); return n;
+    });
+    setSaved(true);
+    setTimeout(() => { setSaved(false); setSection("main"); setPin1(""); setPin2(""); }, 800);
+  }
+
+  if (section === "avatar") return (
+    <Modal onClose={()=>setSection("main")}>
+      <div style={{ fontSize:14, fontWeight:700, marginBottom:12 }}>Change Avatar</div>
+      <div style={{ display:"flex", gap:8, marginBottom:10 }}>
+        {[["male","♂ Male"],["female","♀ Female"]].map(([val,label])=>(
+          <div key={val} onClick={()=>{ setGender(val); setAvatar(0); }}
+            style={{ flex:1, background:gender===val?T.gold+"22":T.card, border:"2px solid "+(gender===val?T.gold:T.border), borderRadius:8, padding:"8px 0", textAlign:"center", fontSize:11, fontWeight:gender===val?700:400, color:gender===val?T.gold:T.textSecondary, cursor:"pointer" }}>
+            {label}
+          </div>
+        ))}
+      </div>
+      <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:8, marginBottom:14 }}>
+        {AVTS.map((av,i) => (
+          <div key={i} onClick={()=>setAvatar(i)}
+            style={{ background:(avatar===i||(avatar===null&&av.e===g.char?.avatar))?T.gold+"22":T.card, border:"2px solid "+((avatar===i||(avatar===null&&av.e===g.char?.avatar))?T.gold:"transparent"), borderRadius:10, padding:"8px 4px", display:"flex", flexDirection:"column", alignItems:"center", gap:3, cursor:"pointer", height:70 }}>
+            <span style={{ fontSize:24 }}>{av.e}</span>
+            <span style={{ fontSize:7, color:T.textMuted }}>{av.l}</span>
+          </div>
+        ))}
+      </div>
+      <div style={{ display:"flex", gap:8 }}>
+        <Btn onClick={()=>setSection("main")} color={T.border} style={{ flex:1 }}>Back</Btn>
+        <Btn onClick={()=>setSection("main")} style={{ flex:2 }}>Done ✓</Btn>
+      </div>
+    </Modal>
+  );
+
+  if (section === "pin") return (
+    <Modal onClose={()=>setSection("main")}>
+      <div style={{ fontSize:14, fontWeight:700, marginBottom:12 }}>Change PIN</div>
+      {!pin1
+        ? <PinEntry label="Enter new PIN" onConfirm={p=>setPin1(p)} onBack={()=>setSection("main")}/>
+        : <PinEntry key={"confirm"+pin1} label="Confirm new PIN" onConfirm={p=>setPin2(p)} onBack={()=>setPin1("")} error={pinErr}/>
+      }
+      {pin1 && pin2 && (
+        <div style={{ marginTop:10 }}>
+          {saved ? <div style={{ textAlign:"center", color:T.mint, fontWeight:700 }}>✓ PIN updated!</div>
+            : <Btn onClick={savePIN}>Save PIN</Btn>}
+          {pinErr && <div style={{ fontSize:10, color:T.red, marginTop:6 }}>{pinErr}</div>}
+        </div>
+      )}
+    </Modal>
+  );
+
+  return (
+    <Modal onClose={onClose}>
+      <div style={{ fontSize:15, fontWeight:700, marginBottom:14 }}>Edit Profile</div>
+
+      {/* Avatar preview */}
+      <div style={{ textAlign:"center", marginBottom:14 }}>
+        <div style={{ fontSize:56, marginBottom:6 }}>{displayAvatar}</div>
+        <div onClick={()=>setSection("avatar")} style={{ display:"inline-block", background:T.card, border:"1px solid "+T.border, borderRadius:8, padding:"6px 14px", fontSize:11, color:T.textSecondary, cursor:"pointer" }}>Change Avatar ✏️</div>
+      </div>
+
+      {/* Name */}
+      <div style={{ fontSize:9, color:T.textMuted, marginBottom:4, letterSpacing:"0.08em" }}>DISPLAY NAME</div>
+      <input ref={nameRef} defaultValue={nameVal} autoCapitalize="characters" autoComplete="off"
+        style={{ width:"100%", background:T.card, border:"1px solid "+T.border, borderRadius:8, padding:"10px 12px", fontSize:14, fontWeight:700, color:T.textPrimary, outline:"none", marginBottom:12, boxSizing:"border-box" }}/>
+
+      {/* Username */}
+      <div style={{ fontSize:9, color:T.textMuted, marginBottom:4, letterSpacing:"0.08em" }}>USERNAME</div>
+      <input ref={unRef} defaultValue={unVal} autoCapitalize="characters" autoComplete="off"
+        style={{ width:"100%", background:T.card, border:"1px solid "+T.gold+"44", borderRadius:8, padding:"10px 12px", fontSize:14, fontWeight:700, color:T.gold, outline:"none", marginBottom:4, boxSizing:"border-box" }}/>
+      <div style={{ fontSize:9, color:T.textMuted, marginBottom:14 }}>⚠️ Changing username means old saves load under the old name</div>
+
+      {/* Change PIN */}
+      <div onClick={()=>setSection("pin")} style={{ background:T.card, border:"1px solid "+T.border, borderRadius:8, padding:"11px 14px", marginBottom:14, display:"flex", justifyContent:"space-between", alignItems:"center", cursor:"pointer" }}>
+        <span style={{ fontSize:12, color:T.textSecondary }}>🔐 Change PIN</span>
+        <span style={{ fontSize:12, color:T.textMuted }}>›</span>
+      </div>
+
+      {saved
+        ? <div style={{ background:T.mint+"22", border:"1px solid "+T.mint+"44", borderRadius:8, padding:12, textAlign:"center", color:T.mint, fontWeight:700, fontSize:13 }}>✓ Saved!</div>
+        : <Btn onClick={save}>Save Changes</Btn>
+      }
+    </Modal>
+  );
+}
+
 function Profile({ g, nav, resetGame, switchAcc, setChosen, setG, seenScreens, markSeen }) {
-  const [tab,setTab]        = useState("overview");
-  const [confirm,setConfirm]= useState(false);
+  const [tab,setTab]           = useState("overview");
+  const [confirm,setConfirm]   = useState(false);
+  const [editOpen,setEditOpen] = useState(false);
   const arc   = getArc(g.arc);
   const title = getTitle(g);
   const stats = [
@@ -4092,8 +3433,13 @@ function Profile({ g, nav, resetGame, switchAcc, setChosen, setG, seenScreens, m
 
   return (
     <div style={{ paddingBottom:80 }}>
-      <Hdr title="Profile" page={tab==="stats"?"profile-stats":"profile"} seenScreens={seenScreens} markSeen={markSeen} onBack={()=>nav("boss")}/>
-      <TabBar tabs={[["overview","Overview"],["stats","Stats"],["history","History"]]} active={tab} onChange={setTab}/>
+      <Hdr title="Profile" page="profile" seenScreens={seenScreens} markSeen={markSeen}
+        onBack={()=>nav("boss")}
+        right={<div onClick={()=>nav("settings")} style={{ fontSize:20, cursor:"pointer", padding:"0 4px" }}>⚙️</div>}/>
+      <TabBar tabs={[["overview","Overview"],["history","History"]]} active={tab} onChange={setTab}/>
+
+      {editOpen && <EditProfileModal g={g} onClose={()=>setEditOpen(false)} setG={setG}/>}
+
       <div style={{ padding:"12px 16px" }}>
         {tab==="overview" && (
           <div>
@@ -4108,9 +3454,10 @@ function Profile({ g, nav, resetGame, switchAcc, setChosen, setG, seenScreens, m
                 <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
                   <Tag color={T.gold}>{title.icon} {title.name}</Tag>
                   <Tag color={arc.color}>{arc.icon} {arc.name}</Tag>
-                  <Tag color={T.purple}>Lv.{g.lv}</Tag>
+                  <Tag color={T.purple}>Pw.{g.lv}</Tag>
                 </div>
               </div>
+              <div onClick={()=>setEditOpen(true)} style={{ flexShrink:0, background:T.card, border:"1px solid "+T.border, borderRadius:8, padding:"6px 10px", fontSize:11, color:T.textSecondary, cursor:"pointer" }}>Edit ✏️</div>
             </div>
 
             {/* XP bar */}
@@ -4180,49 +3527,9 @@ function Profile({ g, nav, resetGame, switchAcc, setChosen, setG, seenScreens, m
               }
             </div>
 
-            {/* Account */}
-            <div onClick={switchAcc} style={{ background:T.panel, borderRadius:10, padding:12, textAlign:"center", color:T.blue, fontWeight:700, cursor:"pointer", border:"1px solid "+T.blue+"33", marginBottom:8 }}>↩ Switch Account</div>
-            {confirm
-              ? <div>
-                  <div style={{ fontSize:12, color:T.red, textAlign:"center", marginBottom:12 }}>Permanently delete all progress?</div>
-                  <div style={{ display:"flex", gap:8 }}>
-                    <div onClick={resetGame} style={{ flex:1, background:T.red, borderRadius:9, padding:11, textAlign:"center", color:T.void, fontWeight:700, cursor:"pointer" }}>Yes, Delete</div>
-                    <div onClick={()=>setConfirm(false)} style={{ flex:1, background:T.border, borderRadius:9, padding:11, textAlign:"center", color:T.textSecondary, fontWeight:700, cursor:"pointer" }}>Cancel</div>
-                  </div>
-                </div>
-              : <div onClick={()=>setConfirm(true)} style={{ background:T.border, borderRadius:10, padding:12, textAlign:"center", color:T.red, fontWeight:700, cursor:"pointer", border:"1px solid "+T.red+"33" }}>Reset Game</div>
-            }
-          </div>
-        )}
-
-        {tab==="stats" && (
-          <div>
-            <Radar stats={g.stats} size={220}/>
-            <div style={{ height:12 }}/>
-            <div style={{ background:T.panel, border:"1px solid "+T.border, borderRadius:10, padding:"10px 14px", marginBottom:12 }}>
-              <div style={{ fontSize:10, color:T.textSecondary, marginBottom:4 }}>Active Arc</div>
-              <div style={{ fontSize:14, fontWeight:700, color:arc.color }}>{arc.icon} {arc.name}</div>
-            </div>
-            {stats.map((r,i) => (
-              <div key={i} style={{ background:T.card, border:"1px solid "+T.border, borderRadius:10, padding:"12px 16px", marginBottom:8, display:"flex", justifyContent:"space-between" }}>
-                <span style={{ fontSize:12, color:T.textSecondary }}>{r[0]}</span>
-                <span style={{ fontSize:16, fontWeight:700, color:r[2] }}>{r[1]}</span>
-              </div>
-            ))}
-            <div style={{ marginTop:8 }}>
-              {SKEYS.map(k => {
-                const v = g.stats[k]||30;
-                const decay = v < 40;
-                return (
-                  <div key={k} style={{ marginBottom:8 }}>
-                    <div style={{ display:"flex", justifyContent:"space-between", marginBottom:2 }}>
-                      <span style={{ fontSize:11, color:T.textSecondary }}>{SM[k].icon} {SM[k].label}</span>
-                      <span style={{ fontSize:11, fontWeight:700, color:decay?T.orange:SM[k].color }}>{v}{decay?" ↓":""}</span>
-                    </div>
-                    <Bar val={v} max={100} color={decay?T.orange:SM[k].color}/>
-                  </div>
-                );
-              })}
+            {/* Settings */}
+            <div onClick={()=>nav("settings")} style={{ background:T.card, border:"1px solid "+T.border, borderRadius:10, padding:14, textAlign:"center", color:T.textSecondary, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:8, marginBottom:8 }}>
+              <span style={{ fontSize:16 }}>⚙️</span> Settings
             </div>
           </div>
         )}
@@ -4638,121 +3945,8 @@ function Achievements({ g, nav, seenScreens, markSeen }) {
   );
 }
 
-// ─── QUEST CHAINS VIEW ────────────────────────────────────────────
 // ─── SKILLS VIEW ──────────────────────────────────────────────────
-const QUEST_CHAINS = []; // removed — skill journeys now serve this purpose
 
-function Skills({ g, nav, seenScreens, markSeen }) {
-  const [tab, setTab] = useState("mastery");
-  const arc = getArc(g.arc);
-
-  // Build skill mastery map from completed skill journeys
-  const skillMastery = useMemo(() => buildSkillMastery(g.skillJourneys), [g.skillJourneys]);
-
-  return (
-    <div style={{ paddingBottom:80 }}>
-      <Hdr title="Skill Tree" page="skills" seenScreens={seenScreens} markSeen={markSeen} onBack={()=>nav("boss")}/>
-      <TabBar tabs={[["mastery","Mastery"]]} active={tab} onChange={setTab}/>
-
-      {tab==="mastery" && (
-        <div style={{ padding:"12px 16px" }}>
-          <div style={{ background:T.card, border:"1px solid "+T.border, borderRadius:10, padding:12, marginBottom:14, fontSize:10, color:T.textSecondary, lineHeight:1.7 }}>
-            Complete skill journeys to build mastery in each stat category.
-            Completing a journey in a new skill adds to that stat's mastery count.
-            Higher tiers grant an XP bonus when you complete a journey in that stat.
-            <div style={{ display:"flex", gap:12, marginTop:8, flexWrap:"wrap" }}>
-              {MASTERY_TIERS.map(t => (
-                <span key={t.tier} style={{ fontSize:9, color:T.textSecondary }}>
-                  {t.icon} <span style={{ color:t.color, fontWeight:700 }}>{t.label}</span> {t.threshold}+ journeys {t.mult>1?`(+${Math.round((t.mult-1)*100)}% XP)`:""}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {SKEYS.map(k => {
-            const m    = SM[k];
-            const data = skillMastery[k] || { count:0, journeys:[] };
-            const tier = getMastery(data.count);
-            const nextTier = MASTERY_TIERS.find(t => data.count < t.threshold);
-            const toNext   = nextTier ? nextTier.threshold - data.count : 0;
-            const barMax   = nextTier ? nextTier.threshold : (tier?.threshold||1);
-            const activeSkillJs = (g.skillJourneys||[]).filter(j=>(j.stat||"INT")===k && !j.complete);
-
-            return (
-              <div key={k} style={{ background:T.card, border:"1px solid "+(tier?tier.color+"44":T.border), borderRadius:12, padding:"12px 14px", marginBottom:10 }}>
-                {/* Header */}
-                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8 }}>
-                  <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                    <span style={{ fontSize:16 }}>{m.icon}</span>
-                    <div>
-                      <span style={{ fontSize:13, fontWeight:700, color:m.color }}>{m.label}</span>
-                      {tier && <span style={{ fontSize:9, color:tier.color, fontWeight:700, marginLeft:6 }}>{tier.icon} {tier.label}</span>}
-                    </div>
-                  </div>
-                  <div style={{ textAlign:"right" }}>
-                    <div style={{ fontSize:12, fontWeight:700, color:tier?tier.color:T.textSecondary }}>{data.count}</div>
-                    <div style={{ fontSize:8, color:T.textSecondary }}>journeys</div>
-                  </div>
-                </div>
-
-                {/* Progress bar to next tier */}
-                {nextTier && (
-                  <div style={{ marginBottom:8 }}>
-                    <Bar val={data.count} max={nextTier.threshold} color={m.color} h={5}/>
-                    <div style={{ display:"flex", justifyContent:"space-between", marginTop:3 }}>
-                      <span style={{ fontSize:8, color:T.textSecondary }}>{data.count}/{nextTier.threshold} journeys to {nextTier.icon} {nextTier.label}</span>
-                      {tier && <span style={{ fontSize:8, color:tier.color }}>+{Math.round((tier.mult-1)*100)}% XP active</span>}
-                    </div>
-                  </div>
-                )}
-                {!nextTier && tier && (
-                  <div style={{ marginBottom:8 }}>
-                    <Bar val={1} max={1} color={T.gold} h={5}/>
-                    <div style={{ fontSize:8, color:T.gold, marginTop:3 }}>✦ Master — +{Math.round((tier.mult-1)*100)}% XP on all {m.label} skill journeys</div>
-                  </div>
-                )}
-
-                {/* Completed skill names */}
-                {data.journeys.length > 0 && (
-                  <div style={{ marginBottom:data.journeys.length&&activeSkillJs.length?8:0 }}>
-                    <div style={{ fontSize:8, color:T.textSecondary, fontWeight:700, marginBottom:4, letterSpacing:"0.06em" }}>COMPLETED</div>
-                    <div style={{ display:"flex", flexWrap:"wrap", gap:4 }}>
-                      {data.journeys.map((skill,i) => (
-                        <span key={i} style={{ fontSize:9, background:m.color+"18", border:"1px solid "+m.color+"33",
-                          borderRadius:20, padding:"2px 8px", color:m.color }}>✓ {skill}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Active skill journeys in this stat */}
-                {activeSkillJs.length > 0 && (
-                  <div>
-                    <div style={{ fontSize:8, color:T.textSecondary, fontWeight:700, marginBottom:4, letterSpacing:"0.06em" }}>IN PROGRESS</div>
-                    {activeSkillJs.map(j => (
-                      <div key={j.id} style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4 }}>
-                        <span style={{ fontSize:9, color:T.cyan }}>🎯 {j.skill}</span>
-                        <div style={{ flex:1 }}><Bar val={j.currentStep} max={j.steps.length} color={T.cyan} h={3}/></div>
-                        <span style={{ fontSize:8, color:T.textSecondary }}>{j.currentStep}/{j.steps.length}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {data.count === 0 && activeSkillJs.length === 0 && (
-                  <div style={{ fontSize:9, color:T.textSecondary, marginTop:4 }}>
-                    No {m.label} skill journeys yet. Go to Quest Log → Skill Quests to start one.
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-    </div>
-  );
-}
 
 // ─── SHOP VIEW ────────────────────────────────────────────────────
 function Shop({ g, buyItem, claimFree, nav, seenScreens, markSeen }) {
@@ -4856,31 +4050,24 @@ function Inventory({ g, equipItem, useItem, nav, seenScreens, markSeen }) {
   );
 }
 
-// ─── CLANS VIEW ───────────────────────────────────────────────────
 // ─── NAV BAR ──────────────────────────────────────────────────────
 function NavBar({ view, nav }) {
   const tabs = [["boss","⚔️","Boss"],["goals","🎯","Goals"],["profile","🧙","Profile"],["shop","🛒","Shop"]];
   return (
     <div style={{ position:"fixed", bottom:0, left:"50%", transform:"translateX(-50%)", width:"100%", maxWidth:500, background:T.panel, borderTop:"1px solid "+T.border, zIndex:100 }}>
-      {/* Main tabs */}
       <div style={{ display:"flex" }}>
         {tabs.map(([id,icon,label]) => (
-          <div key={id} onClick={()=>nav(id)} style={{ flex:1, padding:"8px 4px", textAlign:"center", cursor:"pointer", borderTop:"2px solid "+(view===id?T.gold:"transparent") }}>
-            <div style={{ fontSize:20 }}>{icon}</div>
-            <div style={{ fontSize:8, color:view===id?T.gold:T.textMuted, fontWeight:view===id?700:400 }}>{label}</div>
+          <div key={id} onClick={()=>nav(id)} style={{ flex:1, padding:"12px 4px 10px", textAlign:"center", cursor:"pointer", borderTop:"3px solid "+(view===id?T.gold:"transparent") }}>
+            <div style={{ fontSize:24 }}>{icon}</div>
+            <div style={{ fontSize:10, color:view===id?T.gold:T.textMuted, fontWeight:view===id?700:400, marginTop:2 }}>{label}</div>
           </div>
         ))}
       </div>
-      {/* Coach + Settings row */}
-      <div style={{ display:"flex", borderTop:"1px solid "+T.border, background:T.void }}>
-        <div onClick={()=>nav("coach")} style={{ flex:1, padding:"6px 4px", textAlign:"center", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:5 }}>
-          <span style={{ fontSize:13 }}>🧠</span>
-          <span style={{ fontSize:9, color:view==="coach"?T.gold:T.textMuted, fontWeight:view==="coach"?700:400 }}>Coach</span>
-        </div>
-        <div style={{ width:"1px", background:T.border }}/>
-        <div onClick={()=>nav("settings")} style={{ flex:1, padding:"6px 4px", textAlign:"center", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:5 }}>
-          <span style={{ fontSize:13 }}>⚙️</span>
-          <span style={{ fontSize:9, color:view==="settings"?T.gold:T.textMuted, fontWeight:view==="settings"?700:400 }}>Settings</span>
+      {/* Coach row */}
+      <div style={{ borderTop:"1px solid "+T.border, background:T.void }}>
+        <div onClick={()=>nav("coach")} style={{ padding:"10px 4px", textAlign:"center", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}>
+          <span style={{ fontSize:16 }}>🧠</span>
+          <span style={{ fontSize:11, color:view==="coach"?T.gold:T.textMuted, fontWeight:view==="coach"?700:400 }}>Coach</span>
         </div>
       </div>
     </div>
@@ -4889,92 +4076,57 @@ function NavBar({ view, nav }) {
 
 // ─── SETTINGS VIEW ────────────────────────────────────────────────
 const GUIDE = [
-  { page:"Home", icon:"🏠", steps:[
-    "The carousel shows your current step for every active journey — goal journeys and skill journeys together. Swipe with ‹ › arrows to switch between them.",
-    "Cyan dots in the carousel are skill journeys. Coloured dots match the stat colour of your goal journey.",
-    "Tap 'Complete ✓' to mark the current step done and write a note about how it went.",
-    "'View all →' takes you straight to the All Journeys tab in Quest Log.",
-    "Daily Review unlocks after 9pm — generates a reflection and sets tomorrow's intention.",
-    "The tile grid links to every screen: Quest Log, Boss Battle, Profile, Goals, Coach, Shop, Achievements, Settings.",
-  ]},
-  { page:"Quest Log — Goal Journeys", icon:"📋", steps:[
-    "Each journey card shows all 10 steps: done (strikethrough with your note), current (Complete button), and upcoming (locked — tap 'View all' to preview them).",
-    "Complete steps in order — each one unlocks the next.",
-    "Journey steps are generated from your goal text, quiz answers, and target date. They are specific to you.",
-    "Completed journeys stay here with a 🏆 badge.",
-  ]},
-  { page:"Quest Log — Skill Quests", icon:"🛠️", steps:[
-    "The 'New Skill Journey' generator is always at the top — type any skill and tap 'Start →'.",
-    "A 4-question assessment quiz runs first to gauge your level, time available, motivation, and main obstacle.",
-    "After the quiz, the AI builds a personalised 5-step skill journey calibrated to your starting level.",
-    "Your skill journeys appear below the generator. Complete them step by step, same as goal journeys.",
-    "You can have multiple skill journeys active simultaneously.",
-  ]},
-  { page:"Quest Log — All Journeys", icon:"📊", steps:[
-    "Shows every active journey in one place — goal journeys first, then skill journeys.",
-    "Completed journeys appear at the bottom with a 🏆 badge.",
-    "Use this tab for a full overview of everything you're currently working on.",
-  ]},
-  { page:"Quest Log — Week", icon:"📅", steps:[
-    "Unlocks after 3 active journeys. Generates an AI weekly performance report from your real data.",
-    "Covers quest count, top stats, achievements earned, and one thing to focus on next week.",
-    "Tap 'Generate' on demand. Regenerate anytime for an updated read.",
-  ]},
-  { page:"Boss Battle", icon:"👹", steps:[
-    "Boss quests are AI-generated the moment you save your first goal — based on your actual goals, not generic habits.",
-    "Each quest set mixes goal-specific side missions with lifestyle habits (hydrate, sleep, eat clean).",
-    "More active journeys = more quests = faster kill. 1 journey: 3 quests. 2: 5 quests. 3+: 7 quests.",
-    "Complete all quests, then tap 'Refresh Boss Quests' to get a new AI-generated set tied to your goals.",
-    "Medium = 8 HP damage. Hard = 16 HP. Boss regens 5 HP each day you don't fight.",
-    "4+ Hard quests in one session triggers Fury Mode — double damage for all remaining quests that session.",
+  { page:"Boss Battle", icon:"⚔️", steps:[
+    "Every action damages the boss — but only journey steps deal permanent damage.",
+    "GOAL ATTACKS: completing a journey step. Damage scales: steps 1-3 deal 30 HP, 4-6 deal 80 HP, 7-9 deal 150 HP, step 10 deals 220 HP. A full 10-step journey = 1000 HP = boss dead.",
+    "SKILL ATTACKS: completing a skill journey step. Random outcome — 20% miss, 30% lands then boss heals 70% immediately, 50% clean hit (75% regens at midnight).",
+    "DAILY HABITS: tap 'Done ✓' on any habit. 6 HP each. Boss regens all habit damage at midnight — habits keep you consistent, they don't kill the boss.",
+    "FURY MODE: complete 3 actions of any type → Fury activates for 24 hours → all damage doubles. Every 3 additional actions resets the timer. Threshold drops (3→2→1) as boss HP falls.",
+    "Tap the boss emoji to read its lore. Tap 📖 top-right for your defeated boss journal.",
   ]},
   { page:"Goals", icon:"🎯", steps:[
-    "Write goals in your own words. 'Run a 5k by June' generates far better steps than 'get fit'.",
-    "Set a target date — the AI spaces all 10 steps across your real timeline, paced realistically.",
-    "Tap the ▼ 'Suggested' toggle under any attribute to see goal ideas. Tap one to pre-fill.",
-    "After saving a goal, a 5-question quiz launches specific to that goal. No question is ever repeated.",
-    "Each quiz builds a richer picture of you — answers feed your Profile Summary and sharpen future journey steps.",
-    "Boss quests update with your goals automatically after each new goal is set.",
+    "Write goals in your own words — the more specific the better. 'Run a 5k by June' works far better than 'get fit'.",
+    "Set a target date. The AI spaces your 10 journey steps across that exact timeline.",
+    "After saving a goal, a 5-question quiz runs specific to that goal. No question ever repeats across goals.",
+    "Quiz answers build your profile over time — they feed the Profile Summary and sharpen future journey steps.",
+    "Tap any active goal card to see journey progress, update the deadline, or generate a new journey.",
+    "Skill Journeys tab: type any skill, answer 4 assessment questions, get a personalised 5-step skill journey.",
   ]},
-  { page:"Profile — Overview", icon:"🧙", steps:[
-    "Profile Summary (🧠) unlocks after 3 journeys. Tap to expand, then 'Generate Profile' for your AI analysis.",
-    "The summary draws from all your quiz answers — it gets more accurate as you add goals.",
-    "Tap 'Regenerate' anytime to refresh the analysis with your latest goals and quiz data.",
-    "Achievements shows your 3 most recent. Tap 'View all achievements →' for the full list.",
+  { page:"Profile", icon:"🧙", steps:[
+    "Tap Edit ✏️ on your character card to change name, avatar, username, or PIN.",
+    "Profile Summary (🧠) unlocks after 3 journeys — tap it then 'Generate Profile' for an AI analysis built from all your quiz answers.",
+    "XP bar shows progress to your next Power level.",
+    "Achievements shows your 3 most recent. Tap 'View all →' for the full list.",
+    "Tap ⚙️ top-right to open Settings.",
   ]},
-  { page:"Profile — Stats", icon:"📊", steps:[
-    "Six attributes: STR (physical), INT (learning), CHA (social), WLT (financial), VIT (health), DIS (discipline).",
-    "Stats below 40 show a decay warning. Complete at least one quest in that stat to stop the decline.",
-    "The radar chart shows your balance. An unbalanced character fails at the crucial moment.",
-    "Total XP, Quests Done, Boss Wins, Streak, and Momentum are your core performance numbers.",
+  { page:"Goals — Skill Journeys", icon:"🛠️", steps:[
+    "Tap the 'Skill Journeys' tab inside Goals.",
+    "Type any skill and tap 'Start →'. A 4-question assessment quiz runs first to gauge your current level.",
+    "The AI builds a personalised 5-step journey calibrated to your starting point.",
+    "Complete steps the same way as goal journeys — by attacking the boss.",
+    "Multiple skill journeys can run at the same time.",
   ]},
-  { page:"Skill Tree — Mastery", icon:"🌳", steps:[
-    "Mastery tracks how many skill journeys you've completed in each stat category (INT, STR, CHA, etc.).",
-    "1 journey: 🌱 Apprentice. 3 journeys: 🥉 Adept (+10% XP). 7: 🥈 Veteran (+25% XP). 15: 🥇 Master (+50% XP).",
-    "The XP bonus applies automatically when you complete a skill journey step in that stat.",
-    "Completed skill names are shown as tags — they're your evidence of real skill development.",
-    "In-progress journeys are listed under each stat with a mini progress bar.",
-    "Quest Chains tab: multi-step challenges you add to your daily log. Complete each step in order for cumulative XP.",
-  ]},
-  { page:"Coach", icon:"🤖", steps:[
-    "A full AI advisor with context on your arc, power, stats, and active goals.",
-    "Be direct: 'What's the single highest-leverage thing I should do this week?' gets better answers than vague questions.",
-    "The Coach knows your goals — ask for books, habits, or a breakdown of what to prioritise.",
-    "Use the quick question chips on first open to get oriented fast.",
+  { page:"Coach", icon:"🧠", steps:[
+    "A full AI advisor with context on your arc, power level, goals, and quiz answers.",
+    "Be direct and specific. 'What's the single most important thing for my 5k goal this week?' beats vague questions.",
+    "Ask for book recommendations, habit suggestions, study topics, or a priority breakdown.",
+    "Use the quick question chips on first open to see what the Coach can do.",
   ]},
   { page:"Shop & Inventory", icon:"🛒", steps:[
-    "Claim your free daily item first — it changes every 24 hours. Don't miss it.",
-    "XP Surge doubles XP on your next completed quest. Use it on a Hard quest for maximum value.",
-    "Streak Shield protects your streak for one missed day. Buy it before a busy stretch, not after.",
-    "Boss Freeze stops the boss regenerating HP for 2 days — useful when you need to step back.",
-    "Gear gives permanent stat XP bonuses while equipped. Only one item per slot.",
-    "Equip gear from the Inventory screen. New gear swaps the old item back to your bag.",
+    "Claim your free daily item first — it resets every 24 hours.",
+    "XP Surge doubles XP on your next completed action. Best used on a late-stage journey step.",
+    "Streak Shield protects your streak for one missed day — buy it before a busy period.",
+    "Gear gives permanent stat XP bonuses while equipped. Equip from Inventory (one item per slot).",
+  ]},
+  { page:"Settings", icon:"⚙️", steps:[
+    "Edit Profile: change your name, avatar, username, or PIN at any time without losing progress.",
+    "Switch Account: load a different save by entering a different username and PIN.",
+    "Reset Game: permanently deletes all progress for the current account. Cannot be undone.",
   ]},
   { page:"Achievements", icon:"🏅", steps:[
-    "25 milestones unlock automatically as you play — you don't chase them, they find you.",
-    "Popups appear mid-session when you hit a milestone.",
-    "Locked achievements show exactly what's required: streak length, boss kills, quests, stats.",
-    "Some need specific actions: reading boss lore, using a Streak Shield, completing quest chains.",
+    "25 milestones unlock automatically — you don't need to track them.",
+    "A popup appears mid-session the moment you hit one.",
+    "Locked achievements show exactly what's required.",
   ]},
 ];
 
@@ -5024,19 +4176,28 @@ function UserGuideModal({ onClose }) {
   );
 }
 
-
-function Settings({ g, nav, resetGame, switchAcc, seenScreens, markSeen }) {
+function Settings({ g, nav, resetGame, switchAcc, seenScreens, markSeen, setG }) {
   const [confirm, setConfirm]   = useState(false);
   const [guideOpen, setGuide]   = useState(false);
-
+  const [editOpen, setEditOpen] = useState(false);
 
   return (
     <div style={{ paddingBottom:80 }}>
-      <Hdr title="Settings" page="settings" seenScreens={seenScreens} markSeen={markSeen} onBack={()=>nav("boss")}/>
+      <Hdr title="Settings" page="settings" seenScreens={seenScreens} markSeen={markSeen} onBack={()=>nav("profile")}/>
       {guideOpen && <UserGuideModal onClose={()=>setGuide(false)}/>}
+      {editOpen && <EditProfileModal g={g} onClose={()=>setEditOpen(false)} setG={setG}/>}
 
       <div style={{ padding:"12px 16px" }}>
-        {/* Account */}
+        {/* Edit Profile */}
+        <div style={{ fontSize:10, color:T.textMuted, fontWeight:700, letterSpacing:"0.1em", marginBottom:8 }}>PROFILE</div>
+        <div onClick={()=>setEditOpen(true)} style={{ background:T.card, border:"1px solid "+T.border, borderRadius:12, padding:"14px 16px", marginBottom:16, cursor:"pointer", display:"flex", alignItems:"center", gap:12 }}>
+          <div style={{ width:36, height:36, borderRadius:10, background:T.purple+"22", border:"1px solid "+T.purple+"44", display:"flex", alignItems:"center", justifyContent:"center", fontSize:20 }}>✏️</div>
+          <div style={{ flex:1 }}>
+            <div style={{ fontSize:12, fontWeight:700, color:T.purple }}>Edit Profile</div>
+            <div style={{ fontSize:9, color:T.textMuted }}>Change name, avatar, username or PIN</div>
+          </div>
+          <span style={{ fontSize:14, color:T.textMuted }}>›</span>
+        </div>
         <div style={{ fontSize:10, color:T.textMuted, fontWeight:700, letterSpacing:"0.1em", marginBottom:8 }}>ACCOUNT</div>
         <div style={{ background:T.card, border:"1px solid "+T.border, borderRadius:12, marginBottom:16, overflow:"hidden" }}>
           <div style={{ padding:"12px 14px", borderBottom:"1px solid "+T.border }}>
@@ -5085,10 +4246,9 @@ function Settings({ g, nav, resetGame, switchAcc, seenScreens, markSeen }) {
 // ─── APP ROOT ─────────────────────────────────────────────────────
 function App() {
   const game = useGame();
-  const { g, loaded, startGame, loadGame, setChosen, resetQs, addQs, refreshQs, refreshBQ,
-    addSkillQ, updateSkillJourney, addCustomQ, completeQ, completeJourneyStep, completeSkillStep, completeHabit, addJourney, clearBD, saveCheckin, saveDR,
-    completeGoal, setGoals,
-    setGoalDeadline, delQ, setQD, setBQD, markLoreRead, buyItem, claimFree,
+  const { g, loaded, startGame, loadGame, setChosen, updateSkillJourney,
+    completeJourneyStep, completeSkillStep, completeHabit, addJourney, clearBD, saveCheckin, saveDR,
+    completeGoal, setGoals, setGoalDeadline, markLoreRead, buyItem, claimFree,
     equipItem, useItem, resetGame, switchAcc,
     notify, toast, achPopup, setAchPopup, setG } = game;
   const [view,setView]         = useState("boss");
@@ -5109,8 +4269,7 @@ function App() {
   }, [setG]);
   const nav = useCallback(v => setView(v), []);
 
-  // Parallel journey recovery — fires once on load if goals exist but journeys are missing
-  // (e.g. new device load, migrated save). Uses concurrency-2 so API isn't hammered.
+  // Journey recovery — fires once on load if goals exist but journeys are missing
   const recoveryFired = useRef(false);
   useEffect(() => {
     if (!g || recoveryFired.current) return;
@@ -5118,34 +4277,33 @@ function App() {
       goalText && !(g.journeys||[]).some(j => j.goalText === goalText)
     );
     if (missing.length === 0) return;
-    if (!(g.quizAnswers||[]).length) return; // no quiz data yet — normal onboarding will handle it
+    if (!(g.quizAnswers||[]).length) return;
     recoveryFired.current = true;
     const arc = getArc(g.arc);
     const quizSummary = (g.quizAnswers||[]).map((a,i)=>`A${i+1}: ${a}`).join("\n");
-    parallelLimit(missing.map(goalText => async () => {
-      try {
-        const dl = (g.goalDeadlines||{})[goalText] || "";
-        const raw = await genJourney(goalText, arc.name, quizSummary, [], dl);
-        const journey = {
-          id:`j_rec_${Date.now()}_${Math.random().toString(36).slice(2)}`,
-          goalText, stat:statOf(goalText)||arc.stat,
-          icon:getJourneyIcon(statOf(goalText)||arc.stat),
-          steps:raw.map((s,i)=>({id:`jrs_${i}_${Date.now()}`,title:s.title,xp:Number(s.xp)||50,coins:Number(s.coins)||12,done:false,doneDate:null,note:""})),
-          currentStep:0, complete:false, generatedAt:today(),
-        };
-        setG(p => {
-          if (!p) return p;
-          if ((p.journeys||[]).some(j=>j.goalText===goalText)) return p; // already added
-          const newJs = [...(p.journeys||[]), journey];
-          const activeCount = newJs.filter(j=>!j.complete&&j.currentStep<(j.steps||[]).length).length;
-          const prevActive  = (p.journeys||[]).filter(j=>!j.complete&&j.currentStep<(j.steps||[]).length).length;
-          const needsBossUpdate = (activeCount>=3?7:activeCount>=2?5:3) > (prevActive>=3?7:prevActive>=2?5:3);
-          const n = { ...p, journeys:newJs, ...(needsBossUpdate?{bossQs:getBossQuests(p.arc,activeCount),bqDone:{}}:{}) };
-          persist(n); return n;
-        });
-      } catch(_) {} // silent — user can retry by re-saving the goal
-    }), 2);
-  }, [g?.un]); // only re-run if the account changes
+    // Generate sequentially to avoid hammering the API
+    (async () => {
+      for (const goalText of missing) {
+        try {
+          const dl = (g.goalDeadlines||{})[goalText] || "";
+          const raw = await genJourney(goalText, arc.name, quizSummary, [], dl);
+          const journey = {
+            id:`j_rec_${Date.now()}_${Math.random().toString(36).slice(2)}`,
+            goalText, stat:statOf(goalText)||arc.stat,
+            icon:getJourneyIcon(statOf(goalText)||arc.stat),
+            steps:raw.map((s,i)=>({id:`jrs_${i}_${Date.now()}`,title:s.title,xp:Number(s.xp)||50,coins:Number(s.coins)||12,done:false,doneDate:null,note:""})),
+            currentStep:0, complete:false, generatedAt:today(),
+          };
+          setG(p => {
+            if (!p) return p;
+            if ((p.journeys||[]).some(j=>j.goalText===goalText)) return p;
+            const n = { ...p, journeys:[...(p.journeys||[]), journey] };
+            persist(n); return n;
+          });
+        } catch(_) {}
+      }
+    })();
+  }, [g?.un]);
 
   // Chronicle check
   const showChronicle = useMemo(() => {
@@ -5157,17 +4315,17 @@ function App() {
     setG(prev => { if(!prev)return prev; const s={...prev,chronicleShown:true}; persist(s); return s; });
   }, []);
 
-  // Goal saved → derive arc from this goal's stat (first goal sets the arc), then show quiz
+  // Goal saved → always show quiz for it (accumulates answers, deduplicates questions)
   const onFirstGoalSaved = useCallback((goals, deadline) => {
     if (!g) return;
     const goalText = goals[0];
     if (!goalText) return;
-    if ((g.journeys||[]).some(j => j.goalText === goalText)) return; // already has journey
+    if ((g.journeys||[]).some(j => j.goalText === goalText)) return;
 
-    // Derive arc from the goal's stat — first goal wins; subsequent goals don't change arc
-    const isFirstGoal = (g.mainGoals||[]).length === 0 || ((g.mainGoals||[]).length === 1 && (g.mainGoals||[])[0] === goalText);
+    // First goal sets the arc — derive from goal's stat
+    const isFirstGoal = !(g.mainGoals||[]).some(t => t !== goalText);
     if (isFirstGoal) {
-      const goalStat  = statOf(goalText) || "STR";
+      const goalStat   = statOf(goalText) || "STR";
       const derivedArc = ARCS.find(a => a.stat === goalStat) || ARCS[0];
       if (derivedArc.id !== g.arc) {
         setG(prev => {
@@ -5176,8 +4334,7 @@ function App() {
             arc: derivedArc.id,
             bossHp: getBoss(derivedArc.id, prev.bossIdx||0).maxHp,
             bossPermanentDmg: 0,
-            bossQs: getBossQuests(derivedArc.id),
-            bqDone: {},
+            bossHabitDmgToday: 0,
           };
           persist(n); return n;
         });
@@ -5189,7 +4346,8 @@ function App() {
     setShowQuiz(true);
   }, [g, setG]);
 
-  // Quiz complete → store answers, generate journey, navigate to boss
+  // Quiz complete → store answers, generate journey for this goal only
+  // Uses a ref to hold pending generation so navigation away doesn't lose it
   const genInFlight = useRef(false);
   const onQuizComplete = useCallback(async (answers, askedQs) => {
     setShowQuiz(false);
@@ -5199,7 +4357,7 @@ function App() {
     if (genInFlight.current) return;
     genInFlight.current = true;
 
-    // 1. Save quiz answers
+    // 1. Immediately save quiz answers to state
     const newAnswers = [...(g.quizAnswers||[]), ...answers];
     const newAsked   = [...(g.askedQuestions||[]), ...(askedQs||[])];
     setG(prev => {
@@ -5209,10 +4367,9 @@ function App() {
       return next;
     });
 
-    // 2. Navigate to boss immediately
     nav("boss");
 
-    // 3. Generate journey in background — derive arc from goal stat (most accurate)
+    // 2. Generate journey in background — derive arc from goal stat directly
     try {
       const goalStat   = statOf(goalText) || "STR";
       const currentArc = ARCS.find(a => a.stat === goalStat) || getArc(g.arc);
@@ -5228,36 +4385,22 @@ function App() {
       };
       setG(p => {
         if(!p) return p;
+        // Don't duplicate if already added
         if ((p.journeys||[]).some(j=>j.goalText===goalText)) return p;
         const newJourneys = [...(p.journeys||[]), journey];
         const n = { ...p, journeys: newJourneys };
         persist(n); return n;
       });
 
-      // 4. Regenerate boss quests with AI after new journey
-      setG(p => {
-        if (!p) return p;
-        const activeCount = (p.journeys||[]).filter(j=>!j.complete&&j.currentStep<(j.steps||[]).length).length;
-        const count = activeCount >= 3 ? 7 : activeCount >= 2 ? 5 : 3;
-        const arc2 = getArc(p.arc);
-        genBossQuestsAI(arc2.name, arc2.stat, p.mainGoals||[], getBoss(p.arc, p.bossIdx||0).name,
-          getBoss(p.arc, p.bossIdx||0).lore, (p.bossIdx||0)+1, count,
-          (p.journeys||[]).filter(j=>!j.complete&&j.currentStep<(j.steps||[]).length),
-          p.quizAnswers||[])
-          .then(qs => setG(prev => {
-            if(!prev) return prev;
-            const n = {...prev, bossQs:qs, bqDone:{}};
-            persist(n); return n;
-          }))
-          .catch(() => {});
-        return p;
-      });
+      // Journey generated successfully — boss damage will come from steps
     } catch(_) {
-      // Generation failed silently
+      // Generation failed silently — user can retry by re-adding the goal
     } finally {
       genInFlight.current = false;
     }
   }, [g, pendingGoal, pendingDeadline, nav, setG]);
+
+
 
   if (!loaded) return (
     <div style={{ background:T.void, minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center" }}>
@@ -5297,7 +4440,7 @@ function App() {
     profile:      <Profile g={g} nav={nav} resetGame={resetGame} switchAcc={switchAcc} setChosen={setChosen} setG={setG} seenScreens={ss} markSeen={ms}/>,
     inventory:    <Inventory g={g} equipItem={equipItem} useItem={useItem} nav={nav} seenScreens={ss} markSeen={ms}/>,
     shop:         <Shop g={g} buyItem={buyItem} claimFree={claimFree} nav={nav} seenScreens={ss} markSeen={ms}/>,
-    settings:     <Settings g={g} nav={nav} resetGame={resetGame} switchAcc={switchAcc} seenScreens={ss} markSeen={ms}/>,
+    settings:     <Settings g={g} nav={nav} resetGame={resetGame} switchAcc={switchAcc} seenScreens={ss} markSeen={ms} setG={setG}/>,
     achievements: <Achievements g={g} nav={nav} seenScreens={ss} markSeen={ms}/>,
     home:         <Boss g={g} completeJourneyStep={completeJourneyStep} completeSkillStep={completeSkillStep} completeHabit={completeHabit} clearBD={clearBD} markLoreRead={markLoreRead} nav={nav} seenScreens={ss} markSeen={ms} setG={setG}/>,
   };
